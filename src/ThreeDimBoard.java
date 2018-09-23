@@ -202,6 +202,62 @@ public class ThreeDimBoard {
 					}
 				}
 				
+				if(square[t[0]][t[1]][t[2]].piecetype == 4) {
+					
+					if(((Math.abs(v[0]) == 2 * Math.max(Math.abs(v[1]), Math.abs(v[2])) && (Math.abs(v[1]) == Math.abs(v[2]) || 
+							Math.abs(v[1]) == 0 || Math.abs(v[2]) == 0)) || 
+							(Math.abs(v[1]) == 2 * Math.max(Math.abs(v[0]), Math.abs(v[2])) && (Math.abs(v[0]) == Math.abs(v[2]) || 
+							Math.abs(v[0]) == 0 || Math.abs(v[2]) == 0)) || 
+							(Math.abs(v[2]) == 2 * Math.max(Math.abs(v[0]), Math.abs(v[1])) && (Math.abs(v[0]) == Math.abs(v[1]) || 
+							Math.abs(v[0]) == 0 || Math.abs(v[1]) == 0))) && 
+							Math.max(Math.max(Math.abs(v[0]), Math.abs(v[1])), Math.abs(v[2])) == 2) {
+						
+						if(square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].side != square[t[0]][t[1]][t[2]].side || 
+								square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].piecetype == -1) {
+							return true;
+						}
+					}
+				}
+				
+				if(square[t[0]][t[1]][t[2]].piecetype == 5) {
+					
+					if((v[0] != 0 && v[1] == 0 && v[2] == 0) || 
+							(v[0] == 0 && v[1] != 0 && v[2] == 0) || 
+							(v[0] == 0 && v[1] == 0 && v[2] != 0) ||
+							(v[0] == 0 && Math.abs(v[1]) == Math.abs(v[2]) && v[1] != 0)) {
+						boolean blocked = false;
+						boolean friendlyBarricaded = true;
+						boolean hostileBarricaded = true;
+						int maxv;
+						if(Math.abs(v[0]) != 0)
+							maxv = Math.abs(v[0]);
+						else if(Math.abs(v[1]) != 0)
+							maxv = Math.abs(v[1]);
+						else
+							maxv = Math.abs(v[2]);
+						
+						for(int k = 1; k < maxv; k++) {
+							if(square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].piecetype != -1)
+								blocked = true;
+							if(square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].piecetype != 7 || 
+									square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].side != square[t[0]][t[1]][t[2]].side)
+								friendlyBarricaded = false;
+							if(square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].piecetype != 7 || 
+									square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].side == square[t[0]][t[1]][t[2]].side)
+								hostileBarricaded = false;
+						}
+						
+						if(((square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].side != square[t[0]][t[1]][t[2]].side || 
+								square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].piecetype == -1) && !blocked) || 
+								(hostileBarricaded && square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].piecetype == 7 && 
+								square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].side != square[t[0]][t[1]][t[2]].side) || 
+								(friendlyBarricaded && square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].side != square[t[0]][t[1]][t[2]].side && 
+								square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].piecetype != -1)) {
+							return true;
+						}
+					}
+				}
+				
 				if(square[t[0]][t[1]][t[2]].piecetype == 6) {
 				
 					if(square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].piecetype == -1 || square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].piecetype == 7) {
