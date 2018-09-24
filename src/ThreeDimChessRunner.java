@@ -100,10 +100,15 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 			}
 			if(game.moveValid(t, v) && game.turn == game.square[t[0]][t[1]][t[2]].side) {
 				
-				if(!game.intoCheck(game.turn, t, v)) {
+				if(!game.intoCheck(game.square[t[0]][t[1]][t[2]].side, t, v)) {
+					game.kings[game.turn][0].inCheck = false;
 					game.move(t, v);
 					game.detarget();
 					game.square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].highlighted = false;
+					if(game.inCheck(game.turn))
+						game.kings[game.turn][0].inCheck = true;
+					else
+						game.kings[game.turn][0].inCheck = false;
 				}
 				else 
 					drawError = 100;

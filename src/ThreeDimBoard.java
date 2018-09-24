@@ -177,7 +177,6 @@ public class ThreeDimBoard {
 	}
 	
 	public boolean intoCheck(int side, int[] t, int[] v) {
-		System.out.println("hi");
 		Piece temp = null;
 		int[] tReverse = {t[0] + v[0],t[1] + v[1], t[2] + v[2]};
 		int[] vReverse = {- v[0], - v[1], - v[2]};
@@ -219,7 +218,7 @@ public class ThreeDimBoard {
 			vtemp[0] = kings[side][0].location[0] - pawns[1 - side][k].location[0];
 			vtemp[1] = kings[side][0].location[1] - pawns[1 - side][k].location[1];
 			vtemp[2] = kings[side][0].location[2] - pawns[1 - side][k].location[2];
-			if(!pawns[1 - side][k].testCaptured && moveValid(ttemp, vtemp))
+			if(!pawns[1 - side][k].captured && moveValid(ttemp, vtemp))
 				out = true;
 		}
 		
@@ -228,38 +227,44 @@ public class ThreeDimBoard {
 			vtemp[0] = kings[side][0].location[0] - rooks[1 - side][k].location[0];
 			vtemp[1] = kings[side][0].location[1] - rooks[1 - side][k].location[1];
 			vtemp[2] = kings[side][0].location[2] - rooks[1 - side][k].location[2];
-			if(!rooks[1 - side][k].testCaptured && moveValid(ttemp, vtemp))
+			if(!rooks[1 - side][k].captured && moveValid(ttemp, vtemp))
 				out = true;
 			ttemp = knights[1 - side][k].location;
 			vtemp[0] = kings[side][0].location[0] - knights[1 - side][k].location[0];
 			vtemp[1] = kings[side][0].location[1] - knights[1 - side][k].location[1];
 			vtemp[2] = kings[side][0].location[2] - knights[1 - side][k].location[2];
-			if(!knights[1 - side][k].testCaptured && moveValid(ttemp, vtemp))
+			if(!knights[1 - side][k].captured && moveValid(ttemp, vtemp))
 				out = true;
 			ttemp = bishops[1 - side][k].location;
 			vtemp[0] = kings[side][0].location[0] - bishops[1 - side][k].location[0];
 			vtemp[1] = kings[side][0].location[1] - bishops[1 - side][k].location[1];
 			vtemp[2] = kings[side][0].location[2] - bishops[1 - side][k].location[2];
-			if(!bishops[1 - side][k].testCaptured && moveValid(ttemp, vtemp))
+			if(!bishops[1 - side][k].captured && moveValid(ttemp, vtemp))
 				out = true;
 		}
+		ttemp = kings[1 - side][0].location;
+		vtemp[0] = kings[side][0].location[0] - kings[1 - side][0].location[0];
+		vtemp[1] = kings[side][0].location[1] - kings[1 - side][0].location[1];
+		vtemp[2] = kings[side][0].location[2] - kings[1 - side][0].location[2];
+		if(!kings[1 - side][0].captured && moveValid(ttemp, vtemp))
+			out = true;
 		ttemp = queens[1 - side][0].location;
 		vtemp[0] = kings[side][0].location[0] - queens[1 - side][0].location[0];
 		vtemp[1] = kings[side][0].location[1] - queens[1 - side][0].location[1];
 		vtemp[2] = kings[side][0].location[2] - queens[1 - side][0].location[2];
-		if(!queens[1 - side][0].testCaptured && moveValid(ttemp, vtemp))
+		if(!queens[1 - side][0].captured && moveValid(ttemp, vtemp))
 			out = true;
 		ttemp = princes[1 - side][0].location;
 		vtemp[0] = kings[side][0].location[0] - princes[1 - side][0].location[0];
 		vtemp[1] = kings[side][0].location[1] - princes[1 - side][0].location[1];
 		vtemp[2] = kings[side][0].location[2] - princes[1 - side][0].location[2];
-		if(!princes[1 - side][0].testCaptured && moveValid(ttemp, vtemp))
+		if(!princes[1 - side][0].captured && moveValid(ttemp, vtemp))
 			out = true;
 		ttemp = princesses[1 - side][0].location;
 		vtemp[0] = kings[side][0].location[0] - princesses[1 - side][0].location[0];
 		vtemp[1] = kings[side][0].location[1] - princesses[1 - side][0].location[1];
 		vtemp[2] = kings[side][0].location[2] - princesses[1 - side][0].location[2];
-		if(!princesses[1 - side][0].testCaptured && moveValid(ttemp, vtemp))
+		if(!princesses[1 - side][0].captured && moveValid(ttemp, vtemp))
 			out = true;
 		return out;
 	}
@@ -485,17 +490,12 @@ public class ThreeDimBoard {
 	
 	public void testMove(int[] t, int[] v) {
 		
-		if(square[t[0] + v[0]][t[1] + v[1]][t[2] + v[2]].piecetype != -1) {
-			square[t[0] + v[0]][t[1] + v[1]][t[2] + v[2]].testCaptured = true;
-		}
-		
 		if(square[t[0]][t[1]][t[2]].piecetype == 6) {
 			
 			if(square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].piecetype == -1) {
 				
 				if(v[0] == -((2 * square[t[0]][t[1]][t[2]].side)-1) && (Math.abs(v[1]) == 1 || Math.abs(v[2]) == 1) && 
 						(Math.abs(v[1]) <= 1 && Math.abs(v[2]) <= 1)) {
-					square[t[0]][t[1]+v[1]][t[2]+v[2]].testCaptured = true;
 					square[t[0]][t[1]+v[1]][t[2]+v[2]] = new Piece(-1,0,t[0],t[1]+v[1],t[2]+v[2]);
 				}
 			}
@@ -513,7 +513,6 @@ public class ThreeDimBoard {
 		
 		if(square[t[0] + v[0]][t[1] + v[1]][t[2] + v[2]].piecetype != -1) {
 			square[t[0] + v[0]][t[1] + v[1]][t[2] + v[2]].captured = true;
-			square[t[0] + v[0]][t[1] + v[1]][t[2] + v[2]].testCaptured = true;
 		}
 		
 		if(square[t[0]][t[1]][t[2]].piecetype == 6) {
@@ -528,7 +527,6 @@ public class ThreeDimBoard {
 				if(v[0] == -((2 * square[t[0]][t[1]][t[2]].side)-1) && (Math.abs(v[1]) == 1 || Math.abs(v[2]) == 1) && 
 						(Math.abs(v[1]) <= 1 && Math.abs(v[2]) <= 1)) {
 					square[t[0]][t[1]+v[1]][t[2]+v[2]].captured = true;
-					square[t[0]][t[1]+v[1]][t[2]+v[2]].testCaptured = true;
 					square[t[0]][t[1]+v[1]][t[2]+v[2]] = new Piece(-1,0,t[0],t[1]+v[1],t[2]+v[2]);
 				}
 			}
@@ -611,8 +609,8 @@ class Piece {
 	int piecetype; // -1 = empty, 0 = king, 1 = queen, 2 = prince/princess,
 	// 3 = Bishop, 4 = Knight, 5 = Rook, 6 = Pawn, 7 = Barricade
 	int[] location;
+	boolean inCheck;
 	boolean captured;
-	boolean testCaptured;
 	boolean highlighted;
 	boolean targeted;
 	boolean castleValid; // Can only be true for kings and rooks
@@ -632,7 +630,6 @@ class Piece {
 		location[2] = y;
 		highlighted = false;
 		captured = false;
-		testCaptured = false;
 		
 		if(pt == 0 || pt == 5)
 			castleValid = true;
@@ -645,6 +642,8 @@ class Piece {
 			twoStepsValid = true;
 		
 		enPassantValid = false;
+		
+		inCheck = false;
 	}
 	
 	public void Draw(Graphics g, double viewAngle, double viewElevation) {
@@ -654,7 +653,7 @@ class Piece {
 		double xfact = 70 * (location[1] - 3.5);
 		double yfact = 70 * (location[2] - 3.5);
 		double zfact = 70 * (location[0] - 3.5);
-		if(highlighted == false) {
+		if(highlighted == false && inCheck == false) {
 			if(side == 0)
 				g.setColor(new Color(225,230,160));
 			if(side == 1)
@@ -664,7 +663,7 @@ class Piece {
 			if(side == 3)
 				g.setColor(new Color(20,10,200));
 		}
-		else {
+		else if(highlighted == true && inCheck == false){
 			if(side == 0)
 				g.setColor(new Color(245,250,160));
 			if(side == 1)
@@ -674,6 +673,27 @@ class Piece {
 			if(side == 3)
 				g.setColor(new Color(40,30,200));
 		}
+		else if(highlighted == false && inCheck == true){
+			if(side == 0)
+				g.setColor(new Color(225,190,120));
+			if(side == 1)
+				g.setColor(new Color(80,20,20));
+			if(side == 2)
+				g.setColor(new Color(255,0,0));
+			if(side == 3)
+				g.setColor(new Color(60,10,160));
+		}
+		else if(highlighted == true && inCheck == true){
+			if(side == 0)
+				g.setColor(new Color(245,210,120));
+			if(side == 1)
+				g.setColor(new Color(100,40,20));
+			if(side == 2)
+				g.setColor(new Color(255,40,40));
+			if(side == 3)
+				g.setColor(new Color(80,30,160));
+		}
+		
 		
 		if(piecetype == 0) {
 			g.fillRect((int)Math.round(940 + (xfact * x[0]) + (yfact * y[0])), 
