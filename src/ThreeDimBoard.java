@@ -115,64 +115,64 @@ public class ThreeDimBoard {
 				if(pawns[0][k].piecetype == 6)
 					whitePoints += 1;
 				if(pawns[0][k].piecetype == 5)
-					whitePoints += 10;
-				if(pawns[0][k].piecetype == 4)
-					whitePoints += 18;
-				if(pawns[0][k].piecetype == 3)
 					whitePoints += 6;
+				if(pawns[0][k].piecetype == 4)
+					whitePoints += 3;
+				if(pawns[0][k].piecetype == 3)
+					whitePoints += 3;
 				if(pawns[0][k].piecetype == 2)
-					whitePoints += 9;
+					whitePoints += 4;
 				if(pawns[0][k].piecetype == 1)
-					whitePoints += 36;
+					whitePoints += 12;
 			}
 		}
 		for(int k = 0; k < 4; k++) {
 			if(rooks[0][k].captured == false)
-				whitePoints += 10;
-			if(knights[0][k].captured == false)
-				whitePoints += 18;
-			if(bishops[0][k].captured == false)
 				whitePoints += 6;
+			if(knights[0][k].captured == false)
+				whitePoints += 3;
+			if(bishops[0][k].captured == false)
+				whitePoints += 3;
 		}
 		whitePoints+=1000;
 		if(queens[0][0].captured == false)
-			whitePoints += 36;
+			whitePoints += 12;
 		if(princes[0][0].captured == false)
-			whitePoints += 12;
+			whitePoints += 4;
 		if(princesses[0][0].captured == false)
-			whitePoints += 12;
+			whitePoints += 4;
 		int blackPoints = 0;
 		for(int k = 0; k < 64; k++) {
 			if(pawns[1][k].captured == false) {
 				if(pawns[1][k].piecetype == 6)
 					blackPoints += 1;
 				if(pawns[1][k].piecetype == 5)
-					blackPoints += 10;
-				if(pawns[1][k].piecetype == 4)
-					blackPoints += 18;
-				if(pawns[1][k].piecetype == 3)
 					blackPoints += 6;
+				if(pawns[1][k].piecetype == 4)
+					blackPoints += 3;
+				if(pawns[1][k].piecetype == 3)
+					blackPoints += 3;
 				if(pawns[1][k].piecetype == 2)
-					blackPoints += 9;
+					blackPoints += 4;
 				if(pawns[1][k].piecetype == 1)
-					blackPoints += 36;
+					blackPoints += 12;
 			}
 		}
 		for(int k = 0; k < 4; k++) {
 			if(rooks[1][k].captured == false)
-				blackPoints += 10;
-			if(knights[1][k].captured == false)
-				blackPoints += 18;
-			if(bishops[1][k].captured == false)
 				blackPoints += 6;
+			if(knights[1][k].captured == false)
+				blackPoints += 3;
+			if(bishops[1][k].captured == false)
+				blackPoints += 3;
 		}
 		blackPoints+=1000;
 		if(queens[1][0].captured == false)
-			blackPoints += 36;
+			blackPoints += 12;
 		if(princes[1][0].captured == false)
-			blackPoints += 12;
+			blackPoints += 4;
 		if(princesses[1][0].captured == false)
-			blackPoints += 12;
+			blackPoints += 4;
 		return whitePoints - blackPoints;
 	}
 	
@@ -408,12 +408,9 @@ public class ThreeDimBoard {
 				
 				if(square[t[0]][t[1]][t[2]].piecetype == 4) {
 					
-					if(((Math.abs(v[0]) == 2 * Math.max(Math.abs(v[1]), Math.abs(v[2])) && (Math.abs(v[1]) == Math.abs(v[2]) || 
-							Math.abs(v[1]) == 0 || Math.abs(v[2]) == 0)) || 
-							(Math.abs(v[1]) == 2 * Math.max(Math.abs(v[0]), Math.abs(v[2])) && (Math.abs(v[0]) == Math.abs(v[2]) || 
-							Math.abs(v[0]) == 0 || Math.abs(v[2]) == 0)) || 
-							(Math.abs(v[2]) == 2 * Math.max(Math.abs(v[0]), Math.abs(v[1])) && (Math.abs(v[0]) == Math.abs(v[1]) || 
-							Math.abs(v[0]) == 0 || Math.abs(v[1]) == 0))) && 
+					if((Math.abs(v[0]) == 2 * Math.abs(v[1]) && (Math.abs(v[1]) == Math.abs(v[2])) || 
+							Math.abs(v[1]) == 2 * Math.abs(v[0]) && (Math.abs(v[0]) == Math.abs(v[2])) || 
+							Math.abs(v[2]) == 2 * Math.abs(v[0]) && (Math.abs(v[0]) == Math.abs(v[1]))) && 
 							Math.max(Math.max(Math.abs(v[0]), Math.abs(v[1])), Math.abs(v[2])) == 2) {
 						
 						if(square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].side != square[t[0]][t[1]][t[2]].side || 
@@ -574,7 +571,7 @@ public class ThreeDimBoard {
 								returnValue = false;
 						}
 			}
-			System.out.println(returnValue);
+			
 			for(int g = 0; g < 4; g++) {
 				for(int k = 0; k < 8; k++)
 					for(int j = 0; j < 8; j++)
@@ -595,7 +592,7 @@ public class ThreeDimBoard {
 								returnValue = false;
 						}
 			}
-			System.out.println(returnValue);
+			
 			for(int k = 0; k < 8; k++)
 				for(int j = 0; j < 8; j++)
 					for(int m = 0; m < 8; m++) {
@@ -618,7 +615,6 @@ public class ThreeDimBoard {
 						if(moveValid(t, v) && !intoCheck(princesses[side][0].side, t, v) && !princesses[side][0].captured)
 							returnValue = false;
 					}
-			System.out.println(returnValue);
 		}
 		
 		return returnValue;
