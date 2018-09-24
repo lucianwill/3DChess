@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Polygon;
 import java.awt.event.ActionEvent;
@@ -26,6 +27,7 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 	int turning = 0;
 	int drawError = 0;
 	int inputNeg = 1;
+	int checkmate = 0;
 	public static boolean hidePawns = false;
 	public static boolean hideBarricades = false;
 	ArrayList<Integer> record;
@@ -39,33 +41,19 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 		g.fillRect(0, 0, 1920, 1080);
 		g.setColor(Color.BLACK);
 		
-		if(drawError > 0)
-			g.drawString("Invalid Move", 200, 300);
+		Font f = new Font("Gameover", Font.BOLD, 100);
 		
-		String temp = new String();
-		
-		if(record.size() > 0) {
-			temp = temp + Integer.toString(record.get(0)+1);
-			if(record.size() > 1) {
-				temp = temp + ", " + Integer.toString(record.get(1)+1);
-				if(record.size() > 2) {
-					temp = temp + ", " + Integer.toString(record.get(2)+1);
-					if(record.size() > 3) {
-						temp = temp + " : " + Integer.toString(record.get(3));
-						if(record.size() > 4) {
-							temp = temp + ", " + Integer.toString(record.get(4));
-							if(record.size() > 5) {
-								temp = temp + ", " + Integer.toString(record.get(5));
-							}
-						}
-					}
-				}
-			}
-		}
-		g.drawString(temp, 200, 280);
-		
+		g.setFont(f);
 		
 		drawBoard(g);
+		if(checkmate == 1) {
+			g.setColor(Color.WHITE);
+			g.drawString("White Wins", 700, 480);
+		}
+		if(checkmate == -1) {
+			g.setColor(Color.WHITE);
+			g.drawString("Black Wins", 700, 480);
+		}
 	}
 	
 	public ThreeDimChessRunner() {
@@ -109,6 +97,8 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 						game.kings[game.turn][0].inCheck = true;
 					else
 						game.kings[game.turn][0].inCheck = false;
+					if(game.checkmate(game.turn))
+						checkmate = (game.turn * 2) - 1;
 				}
 				else 
 					drawError = 100;

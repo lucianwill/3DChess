@@ -557,17 +557,85 @@ public class ThreeDimBoard {
 		
 	}
 	
+	public boolean checkmate(int side) {
+		boolean returnValue = false;
+		if(inCheck(side)) {
+			returnValue = true;
+			
+			for(int g = 0; g < 64; g++) {
+				for(int k = 0; k < 8; k++)
+					for(int j = 0; j < 8; j++)
+						for(int m = 0; m < 8; m++) {
+							int[] t = new int[3];
+							int[] v = new int[3];
+							t[0] = pawns[side][g].location[0]; t[1] = pawns[side][g].location[1]; t[2] = pawns[side][g].location[2];
+							v[0] = k - t[0]; v[1] = j - t[1]; v[2] = m - t[2];
+							if(moveValid(t, v) && !intoCheck(pawns[side][g].side, t, v) && !pawns[side][g].captured)
+								returnValue = false;
+						}
+			}
+			System.out.println(returnValue);
+			for(int g = 0; g < 4; g++) {
+				for(int k = 0; k < 8; k++)
+					for(int j = 0; j < 8; j++)
+						for(int m = 0; m < 8; m++) {
+							int[] t = new int[3];
+							int[] v = new int[3];
+							t[0] = rooks[side][g].location[0]; t[1] = rooks[side][g].location[1]; t[2] = rooks[side][g].location[2];
+							v[0] = k - t[0]; v[1] = j - t[1]; v[2] = m - t[2];
+							if(moveValid(t, v) && !intoCheck(rooks[side][g].side, t, v) && !rooks[side][g].captured)
+								returnValue = false;
+							t[0] = knights[side][g].location[0]; t[1] = knights[side][g].location[1]; t[2] = knights[side][g].location[2];
+							v[0] = k - t[0]; v[1] = j - t[1]; v[2] = m - t[2];
+							if(moveValid(t, v) && !intoCheck(knights[side][g].side, t, v) && !knights[side][g].captured)
+								returnValue = false;
+							t[0] = bishops[side][g].location[0]; t[1] = bishops[side][g].location[1]; t[2] = bishops[side][g].location[2];
+							v[0] = k - t[0]; v[1] = j - t[1]; v[2] = m - t[2];
+							if(moveValid(t, v) && !intoCheck(bishops[side][g].side, t, v) && !bishops[side][g].captured)
+								returnValue = false;
+						}
+			}
+			System.out.println(returnValue);
+			for(int k = 0; k < 8; k++)
+				for(int j = 0; j < 8; j++)
+					for(int m = 0; m < 8; m++) {
+						int[] t = new int[3];
+						int[] v = new int[3];
+						t[0] = kings[side][0].location[0]; t[1] = kings[side][0].location[1]; t[2] = kings[side][0].location[2];
+						v[0] = k - t[0]; v[1] = j - t[1]; v[2] = m - t[2];
+						if(moveValid(t, v) && !intoCheck(kings[side][0].side, t, v))
+							returnValue = false;
+						t[0] = queens[side][0].location[0]; t[1] = queens[side][0].location[1]; t[2] = queens[side][0].location[2];
+						v[0] = k - t[0]; v[1] = j - t[1]; v[2] = m - t[2];
+						if(moveValid(t, v) && !intoCheck(queens[side][0].side, t, v) && !queens[side][0].captured)
+							returnValue = false;
+						t[0] = princes[side][0].location[0]; t[1] = princes[side][0].location[1]; t[2] = princes[side][0].location[2];
+						v[0] = k - t[0]; v[1] = j - t[1]; v[2] = m - t[2];
+						if(moveValid(t, v) && !intoCheck(princes[side][0].side, t, v) && !princes[side][0].captured)
+							returnValue = false;
+						t[0] = princesses[side][0].location[0]; t[1] = princesses[side][0].location[1]; t[2] = princesses[side][0].location[2];
+						v[0] = k - t[0]; v[1] = j - t[1]; v[2] = m - t[2];
+						if(moveValid(t, v) && !intoCheck(princesses[side][0].side, t, v) && !princesses[side][0].captured)
+							returnValue = false;
+					}
+			System.out.println(returnValue);
+		}
+		
+		return returnValue;
+	}
+	
 	public void target(Piece highlighted) {
-		for(int k = 0; k < 8; k++)
-			for(int j = 0; j < 8; j++)
-				for(int m = 0; m < 8; m++) {
-					int[] t = new int[3];
-					int[] v = new int[3];
-					t[0] = highlighted.location[0]; t[1] = highlighted.location[1]; t[2] = highlighted.location[2];
-					v[0] = k - t[0]; v[1] = j - t[1]; v[2] = m - t[2];
-					if(moveValid(t, v))
-						square[k][j][m].targeted = true;
-				}
+		if(highlighted.side == turn)
+			for(int k = 0; k < 8; k++)
+				for(int j = 0; j < 8; j++)
+					for(int m = 0; m < 8; m++) {
+						int[] t = new int[3];
+						int[] v = new int[3];
+						t[0] = highlighted.location[0]; t[1] = highlighted.location[1]; t[2] = highlighted.location[2];
+						v[0] = k - t[0]; v[1] = j - t[1]; v[2] = m - t[2];
+						if(moveValid(t, v) && !intoCheck(highlighted.side, t, v))
+							square[k][j][m].targeted = true;
+					}
 	}
 	
 	public void detarget() {
