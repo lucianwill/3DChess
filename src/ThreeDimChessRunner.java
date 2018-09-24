@@ -23,7 +23,7 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 	double viewAngle = 0;
 	double viewElevation = 0;
 	int elevate = 0;
-	int turn = 0;
+	int turning = 0;
 	int drawError = 0;
 	int inputNeg = 1;
 	public static boolean hidePawns = false;
@@ -64,6 +64,7 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 		}
 		g.drawString(temp, 200, 280);
 		
+		
 		drawBoard(g);
 	}
 	
@@ -97,18 +98,21 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 				t[k] = record.get(k);
 				v[k] = record.get(k+3);
 			}
-			if(game.moveValid(t, v)) {
-				game.move(t, v);
-				game.detarget();
-				game.square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].highlighted = false;
-			}
-			else {
-				drawError = 100;
+			if(game.moveValid(t, v) && game.turn == game.square[t[0]][t[1]][t[2]].side) {
 				
+				if(!game.intoCheck(game.turn, t, v)) {
+					game.move(t, v);
+					game.detarget();
+					game.square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].highlighted = false;
+				}
+				else 
+					drawError = 100;
 			}
+			else
+				drawError = 100;
 			record = new ArrayList<Integer>();
 		}
-		viewAngle += (double)turn * tm.getDelay()/160;
+		viewAngle += (double)turning * tm.getDelay()/160;
 		if (viewElevation + (double)elevate * tm.getDelay()/160 > Math.PI/2)
 			viewElevation = Math.PI/2;
 		else if (viewElevation + (double)elevate * tm.getDelay()/160 < -Math.PI/2)
@@ -499,10 +503,10 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 	public void keyPressed(KeyEvent e) {
 		int c = e.getKeyCode();
 		if (c == KeyEvent.VK_LEFT) {
-			turn = 1;
+			turning = 1;
 		}
 		if (c == KeyEvent.VK_RIGHT) {
-			turn = -1;
+			turning = -1;
 		}
 		if (c == KeyEvent.VK_UP) {
 			elevate = 1;
@@ -522,69 +526,6 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 			else
 				hidePawns = true;
 		}
-		if (c == KeyEvent.VK_MINUS) {
-			inputNeg = -1;
-		}
-		if (c == KeyEvent.VK_0) {
-			if(record.size() > 2)
-				record.add(0);
-		}
-		if (c == KeyEvent.VK_1) {
-			if(record.size() < 3)
-				record.add(0);
-			else
-				record.add(1 * inputNeg);
-			inputNeg = 1;
-		}
-		if (c == KeyEvent.VK_2) {
-			if(record.size() < 3)
-				record.add(1);
-			else
-				record.add(2 * inputNeg);
-			inputNeg = 1;
-		}
-		if (c == KeyEvent.VK_3) {
-			if(record.size() < 3)
-				record.add(2);
-			else
-				record.add(3 * inputNeg);
-			inputNeg = 1;
-		}
-		if (c == KeyEvent.VK_4) {
-			if(record.size() < 3)
-				record.add(3);
-			else
-				record.add(4 * inputNeg);
-			inputNeg = 1;
-		}
-		if (c == KeyEvent.VK_5) {
-			if(record.size() < 3)
-				record.add(4);
-			else
-				record.add(5 * inputNeg);
-			inputNeg = 1;
-		}
-		if (c == KeyEvent.VK_6) {
-			if(record.size() < 3)
-				record.add(5);
-			else
-				record.add(6 * inputNeg);
-			inputNeg = 1;
-		}
-		if (c == KeyEvent.VK_7) {
-			if(record.size() < 3)
-				record.add(6);
-			else
-				record.add(7 * inputNeg);
-			inputNeg = 1;
-		}
-		if (c == KeyEvent.VK_8) {
-			if(record.size() < 3)
-				record.add(7);
-		}
-		if (c == KeyEvent.VK_9) {
-			record = new ArrayList<Integer>();
-		}
 		
 	}
 
@@ -592,7 +533,7 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 	public void keyReleased(KeyEvent e) {
 		int c = e.getKeyCode();
 		if (c == KeyEvent.VK_LEFT || c == KeyEvent.VK_RIGHT) {
-			turn = 0;
+			turning = 0;
 		}
 		if (c == KeyEvent.VK_UP || c == KeyEvent.VK_DOWN) {
 			elevate = 0;
@@ -678,7 +619,6 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 				closestClickedPiece.highlighted = true;
 				game.target(closestClickedPiece);
 				record = new ArrayList<Integer>();
-				System.out.println(closestPoint + " " + closestClickedPiece.location[0]);
 				record.add(closestClickedPiece.location[0]);
 				record.add(closestClickedPiece.location[1]);
 				record.add(closestClickedPiece.location[2]);
@@ -690,7 +630,6 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 						for(int m = 0; m < 8; m++)
 							game.square[k][j][m].highlighted = false;
 				game.detarget();
-				System.out.println(closestPoint + " " + closestClickedPiece.location[0]);
 				record.add(closestClickedPiece.location[0] - record.get(0));
 				record.add(closestClickedPiece.location[1] - record.get(1));
 				record.add(closestClickedPiece.location[2] - record.get(2));

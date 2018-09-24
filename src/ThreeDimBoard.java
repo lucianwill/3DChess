@@ -7,14 +7,14 @@ public class ThreeDimBoard {
 	Piece[][][] square; // The array of all positions on the board.
 	int gametype;
 	int turn;
-	int[] kCount = new int[2]; //King
-	int[] qCount = new int[2]; //Queen
-	int[] sCount = new int[2]; //Prince/Princess
-	int[] bCount = new int[2]; //Bishop
-	int[] nCount = new int[2]; //Knight
-	int[] rCount = new int[2]; //Rook
-	int[] pCount = new int[2]; //Pawn
-	int[] cCount = new int[2]; //Barricade
+	Piece[][] kings; //King
+	Piece[][] queens; //Queen
+	Piece[][] princes; //Prince/Princess
+	Piece[][] princesses;
+	Piece[][] bishops; //Bishop
+	Piece[][] knights; //Knight
+	Piece[][] rooks; //Rook
+	Piece[][] pawns; //Pawn
 	
 	public ThreeDimBoard(int gt) {
 		gametype = gt;
@@ -23,8 +23,15 @@ public class ThreeDimBoard {
 		if(gt == 0) {
 			square = new Piece[8][8][8]; // 1st number is height up the board 1-8. 2nd is width a-h and 3rd is depth a-h.
 			// For instance, the white king starts at ee1 or [0][4][4] and the queen starts at de1 or [0][3][4].
-			kCount[0] = 1; qCount[0] = 1; sCount[0] = 2; bCount[0] = 4; nCount[0] = 4; rCount[0] = 4; pCount[0] = 64; cCount[0] = 48;
-			kCount[1] = 1; qCount[1] = 1; sCount[1] = 2; bCount[1] = 4; nCount[1] = 4; rCount[1] = 4; pCount[1] = 64; cCount[1] = 48;
+			
+			kings = new Piece[2][1];
+			queens = new Piece[2][1];
+			princes = new Piece[2][1];
+			princesses = new Piece[2][1];
+			bishops = new Piece[2][4];
+			knights = new Piece[2][4];
+			rooks = new Piece[2][4];
+			pawns = new Piece[2][64];
 			
 			for(int k = 0; k < 8; k++)
 				for(int j = 0; j < 8; j++)
@@ -37,6 +44,8 @@ public class ThreeDimBoard {
 				for(int j = 0; j < 8; j++) {
 					square[1][k][j] = new Piece(6,0,1,k,j); // Pawns
 					square[6][k][j] = new Piece(6,1,6,k,j);
+					pawns[0][(8 * k) + j] = square[1][k][j];
+					pawns[1][(8 * k) + j] = square[6][k][j];
 					square[0][k][j] = new Piece(7,0,0,k,j); // Barricades, some of which are later overwritten.
 					square[7][k][j] = new Piece(7,1,7,k,j);
 				}
@@ -47,16 +56,26 @@ public class ThreeDimBoard {
 				for(int j = 0; j < 2; j++) {
 					square[0][k*7][j*7] = new Piece(5,0,0,k*7,j*7); // Rooks
 					square[7][k*7][j*7] = new Piece(5,1,7,k*7,j*7);
+					rooks[0][(2 * k) + j] = square[0][k*7][j*7];
+					rooks[1][(2 * k) + j] = square[7][k*7][j*7];
 					square[0][(k*5)+1][(j*5)+1] = new Piece(4,0,0,(k*5)+1,(j*5)+1); // Knights
 					square[7][(k*5)+1][(j*5)+1] = new Piece(4,1,7,(k*5)+1,(j*5)+1);
+					knights[0][(2 * k) + j] = square[0][(k*5)+1][(j*5)+1];
+					knights[1][(2 * k) + j] = square[7][(k*5)+1][(j*5)+1];
 					square[0][(k*3)+2][(j*3)+2] = new Piece(3,0,0,(k*3)+2,(j*3)+2); // Bishops
 					square[7][(k*3)+2][(j*3)+2] = new Piece(3,1,7,(k*3)+2,(j*3)+2);
+					bishops[0][(2 * k) + j] = square[0][(k*3)+2][(j*3)+2];
+					bishops[1][(2 * k) + j] = square[7][(k*3)+2][(j*3)+2];
 				}
 				
 				square[k*7][4][4] = new Piece(0,k,k*7,4,4); // King
+				kings[k][0] = square[k*7][4][4];
 				square[k*7][3][4] = new Piece(1,k,k*7,3,4); // Queen
+				queens[k][0] = square[k*7][3][4];
 				square[k*7][3][3] = new Piece(2,k,k*7,3,3); // Prince
+				princes[k][0] = square[k*7][3][3];
 				square[k*7][4][3] = new Piece(2,k,k*7,4,3); // Princess
+				princesses[k][0] = square[k*7][4][3];
 			}
 		}
 		
@@ -65,14 +84,194 @@ public class ThreeDimBoard {
 		}
 	}
 	
+	public int pieceCount(int side) {
+		int total = 0;
+		for(int k = 0; k < 64; k++) {
+			if(pawns[side][k].captured == false)
+				total++;
+		}
+		for(int k = 0; k < 4; k++) {
+			if(rooks[side][k].captured == false)
+				total++;
+			if(knights[side][k].captured == false)
+				total++;
+			if(bishops[side][k].captured == false)
+				total++;
+		}
+		total++;
+		if(queens[side][0].captured == false)
+			total++;
+		if(princes[side][0].captured == false)
+			total++;
+		if(princesses[side][0].captured == false)
+			total++;
+		return total;
+	}
+	
+	public int advantage() {
+		int whitePoints = 0;
+		for(int k = 0; k < 64; k++) {
+			if(pawns[0][k].captured == false) {
+				if(pawns[0][k].piecetype == 6)
+					whitePoints += 1;
+				if(pawns[0][k].piecetype == 5)
+					whitePoints += 10;
+				if(pawns[0][k].piecetype == 4)
+					whitePoints += 18;
+				if(pawns[0][k].piecetype == 3)
+					whitePoints += 6;
+				if(pawns[0][k].piecetype == 2)
+					whitePoints += 9;
+				if(pawns[0][k].piecetype == 1)
+					whitePoints += 36;
+			}
+		}
+		for(int k = 0; k < 4; k++) {
+			if(rooks[0][k].captured == false)
+				whitePoints += 10;
+			if(knights[0][k].captured == false)
+				whitePoints += 18;
+			if(bishops[0][k].captured == false)
+				whitePoints += 6;
+		}
+		whitePoints+=1000;
+		if(queens[0][0].captured == false)
+			whitePoints += 36;
+		if(princes[0][0].captured == false)
+			whitePoints += 12;
+		if(princesses[0][0].captured == false)
+			whitePoints += 12;
+		int blackPoints = 0;
+		for(int k = 0; k < 64; k++) {
+			if(pawns[1][k].captured == false) {
+				if(pawns[1][k].piecetype == 6)
+					blackPoints += 1;
+				if(pawns[1][k].piecetype == 5)
+					blackPoints += 10;
+				if(pawns[1][k].piecetype == 4)
+					blackPoints += 18;
+				if(pawns[1][k].piecetype == 3)
+					blackPoints += 6;
+				if(pawns[1][k].piecetype == 2)
+					blackPoints += 9;
+				if(pawns[1][k].piecetype == 1)
+					blackPoints += 36;
+			}
+		}
+		for(int k = 0; k < 4; k++) {
+			if(rooks[1][k].captured == false)
+				blackPoints += 10;
+			if(knights[1][k].captured == false)
+				blackPoints += 18;
+			if(bishops[1][k].captured == false)
+				blackPoints += 6;
+		}
+		blackPoints+=1000;
+		if(queens[1][0].captured == false)
+			blackPoints += 36;
+		if(princes[1][0].captured == false)
+			blackPoints += 12;
+		if(princesses[1][0].captured == false)
+			blackPoints += 12;
+		return whitePoints - blackPoints;
+	}
+	
+	public boolean intoCheck(int side, int[] t, int[] v) {
+		System.out.println("hi");
+		Piece temp = null;
+		int[] tReverse = {t[0] + v[0],t[1] + v[1], t[2] + v[2]};
+		int[] vReverse = {- v[0], - v[1], - v[2]};
+		boolean enPassantMove = false;
+		boolean returnValue = false;
+		temp = square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]];
+		if(square[t[0]][t[1]][t[2]].piecetype == 6) {
+			if(square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].piecetype == -1) {
+				if(v[0] == -((2 * square[t[0]][t[1]][t[2]].side)-1) && (Math.abs(v[1]) == 1 || Math.abs(v[2]) == 1) && 
+						(Math.abs(v[1]) <= 1 && Math.abs(v[2]) <= 1)) {
+					temp = square[t[0]][t[1]+v[1]][t[2]+v[2]];
+					enPassantMove = true;
+				}
+			}
+		}
+		
+		testMove(t, v);
+		
+		if(inCheck(side))
+			returnValue = true;
+		
+		testMove(tReverse, vReverse);
+		
+		if(enPassantMove) {
+			square[t[0]][t[1]+v[1]][t[2]+v[2]] = temp;
+		}
+		else
+			square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]] = temp;
+		
+		return returnValue;
+	}
+	
+	public boolean inCheck(int side) {
+		int[] ttemp = new int[3];
+		int[] vtemp = new int[3];
+		boolean out = false;
+		for(int k = 0; k < 64; k++) {
+			ttemp = pawns[1 - side][k].location;
+			vtemp[0] = kings[side][0].location[0] - pawns[1 - side][k].location[0];
+			vtemp[1] = kings[side][0].location[1] - pawns[1 - side][k].location[1];
+			vtemp[2] = kings[side][0].location[2] - pawns[1 - side][k].location[2];
+			if(!pawns[1 - side][k].testCaptured && moveValid(ttemp, vtemp))
+				out = true;
+		}
+		
+		for(int k = 0; k < 4; k++) {
+			ttemp = rooks[1 - side][k].location;
+			vtemp[0] = kings[side][0].location[0] - rooks[1 - side][k].location[0];
+			vtemp[1] = kings[side][0].location[1] - rooks[1 - side][k].location[1];
+			vtemp[2] = kings[side][0].location[2] - rooks[1 - side][k].location[2];
+			if(!rooks[1 - side][k].testCaptured && moveValid(ttemp, vtemp))
+				out = true;
+			ttemp = knights[1 - side][k].location;
+			vtemp[0] = kings[side][0].location[0] - knights[1 - side][k].location[0];
+			vtemp[1] = kings[side][0].location[1] - knights[1 - side][k].location[1];
+			vtemp[2] = kings[side][0].location[2] - knights[1 - side][k].location[2];
+			if(!knights[1 - side][k].testCaptured && moveValid(ttemp, vtemp))
+				out = true;
+			ttemp = bishops[1 - side][k].location;
+			vtemp[0] = kings[side][0].location[0] - bishops[1 - side][k].location[0];
+			vtemp[1] = kings[side][0].location[1] - bishops[1 - side][k].location[1];
+			vtemp[2] = kings[side][0].location[2] - bishops[1 - side][k].location[2];
+			if(!bishops[1 - side][k].testCaptured && moveValid(ttemp, vtemp))
+				out = true;
+		}
+		ttemp = queens[1 - side][0].location;
+		vtemp[0] = kings[side][0].location[0] - queens[1 - side][0].location[0];
+		vtemp[1] = kings[side][0].location[1] - queens[1 - side][0].location[1];
+		vtemp[2] = kings[side][0].location[2] - queens[1 - side][0].location[2];
+		if(!queens[1 - side][0].testCaptured && moveValid(ttemp, vtemp))
+			out = true;
+		ttemp = princes[1 - side][0].location;
+		vtemp[0] = kings[side][0].location[0] - princes[1 - side][0].location[0];
+		vtemp[1] = kings[side][0].location[1] - princes[1 - side][0].location[1];
+		vtemp[2] = kings[side][0].location[2] - princes[1 - side][0].location[2];
+		if(!princes[1 - side][0].testCaptured && moveValid(ttemp, vtemp))
+			out = true;
+		ttemp = princesses[1 - side][0].location;
+		vtemp[0] = kings[side][0].location[0] - princesses[1 - side][0].location[0];
+		vtemp[1] = kings[side][0].location[1] - princesses[1 - side][0].location[1];
+		vtemp[2] = kings[side][0].location[2] - princesses[1 - side][0].location[2];
+		if(!princesses[1 - side][0].testCaptured && moveValid(ttemp, vtemp))
+			out = true;
+		return out;
+	}
+	
+	
 	public boolean moveValid(int[] t, int[] v) {
 		
-		if(gametype == 0 && (t[0] + v[0] >= 0 && t[0] + v[0] < 8) && 
-				(t[1] + v[1] >= 0 && t[1] + v[1] < 8) && (t[2] + v[2] >= 0 && t[2] + v[2] < 8) && 
-				square[t[0]][t[1]][t[2]].piecetype != -1) {
-			if(turn == square[t[0]][t[1]][t[2]].side) {
+			if(gametype == 0 && (t[0] + v[0] >= 0 && t[0] + v[0] < 8) && 
+					(t[1] + v[1] >= 0 && t[1] + v[1] < 8) && (t[2] + v[2] >= 0 && t[2] + v[2] < 8) && 
+					square[t[0]][t[1]][t[2]].piecetype != -1) {
 				if(square[t[0]][t[1]][t[2]].piecetype == 0) {
-				
+					
 					if(square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].piecetype == -1) {
 						if((Math.abs(v[0]) == 1 || Math.abs(v[1]) == 1 || Math.abs(v[2]) == 1) && 
 								(Math.abs(v[0]) <= 1 && Math.abs(v[1]) <= 1 && Math.abs(v[2]) <= 1))
@@ -265,7 +464,7 @@ public class ThreeDimBoard {
 							return true;
 						if(square[t[0]][t[1]+v[1]][t[2]+v[2]].piecetype != -1) {
 							if(v[0] == -((2 * square[t[0]][t[1]][t[2]].side)-1) && (Math.abs(v[1]) == 1 || Math.abs(v[2]) == 1) && 
-									(Math.abs(v[1]) <= 1 && Math.abs(v[2]) <= 1) && square[t[0]][t[1]+v[1]][t[2]+v[2]].enPassantValid == true) {
+									(Math.abs(v[1]) <= 1 && Math.abs(v[2]) <= 1) && square[t[0]][t[1]+v[1]][t[2]+v[2]].enPassantValid) {
 								return true;
 							}
 						}
@@ -281,24 +480,62 @@ public class ThreeDimBoard {
 						return true;
 				}
 			}
-		}
-		
 		return false;
 	}
 	
-	public void move(int[] t, int[] v) { // t is location, v is vector.
+	public void testMove(int[] t, int[] v) {
+		
+		if(square[t[0] + v[0]][t[1] + v[1]][t[2] + v[2]].piecetype != -1) {
+			square[t[0] + v[0]][t[1] + v[1]][t[2] + v[2]].testCaptured = true;
+		}
 		
 		if(square[t[0]][t[1]][t[2]].piecetype == 6) {
+			
+			if(square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].piecetype == -1) {
+				
+				if(v[0] == -((2 * square[t[0]][t[1]][t[2]].side)-1) && (Math.abs(v[1]) == 1 || Math.abs(v[2]) == 1) && 
+						(Math.abs(v[1]) <= 1 && Math.abs(v[2]) <= 1)) {
+					square[t[0]][t[1]+v[1]][t[2]+v[2]].testCaptured = true;
+					square[t[0]][t[1]+v[1]][t[2]+v[2]] = new Piece(-1,0,t[0],t[1]+v[1],t[2]+v[2]);
+				}
+			}
+		}
+		
+		square[t[0] + v[0]][t[1] + v[1]][t[2] + v[2]] = square[t[0]][t[1]][t[2]];
+		square[t[0] + v[0]][t[1] + v[1]][t[2] + v[2]].location[0] += v[0];
+		square[t[0] + v[0]][t[1] + v[1]][t[2] + v[2]].location[1] += v[1];
+		square[t[0] + v[0]][t[1] + v[1]][t[2] + v[2]].location[2] += v[2];
+		square[t[0]][t[1]][t[2]] = new Piece(-1,0,t[0],t[1],t[2]);
+	}
+	
+	
+	public void move(int[] t, int[] v) { // t is location vector, v is change vector.
+		
+		if(square[t[0] + v[0]][t[1] + v[1]][t[2] + v[2]].piecetype != -1) {
+			square[t[0] + v[0]][t[1] + v[1]][t[2] + v[2]].captured = true;
+			square[t[0] + v[0]][t[1] + v[1]][t[2] + v[2]].testCaptured = true;
+		}
+		
+		if(square[t[0]][t[1]][t[2]].piecetype == 6) {
+			
 			if(v[0] == -((4 * square[t[0]][t[1]][t[2]].side)-2)) {
 				square[t[0]][t[1]][t[2]].twoStepsValid = false;
 				square[t[0]][t[1]][t[2]].enPassantValid = true;
 			}
 			
 			if(square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].piecetype == -1) {
+				
 				if(v[0] == -((2 * square[t[0]][t[1]][t[2]].side)-1) && (Math.abs(v[1]) == 1 || Math.abs(v[2]) == 1) && 
-						(Math.abs(v[1]) <= 1 && Math.abs(v[2]) <= 1) && square[t[0]][t[1]+v[1]][t[2]+v[2]].enPassantValid == true)
+						(Math.abs(v[1]) <= 1 && Math.abs(v[2]) <= 1)) {
+					square[t[0]][t[1]+v[1]][t[2]+v[2]].captured = true;
+					square[t[0]][t[1]+v[1]][t[2]+v[2]].testCaptured = true;
 					square[t[0]][t[1]+v[1]][t[2]+v[2]] = new Piece(-1,0,t[0],t[1]+v[1],t[2]+v[2]);
+				}
 			}
+		}
+		
+		if(square[t[0]][t[1]][t[2]].piecetype == 0 || square[t[0]][t[1]][t[2]].piecetype == 5) {
+			square[t[0]][t[1]][t[2]].castleValid = false;
 		}
 		
 		square[t[0] + v[0]][t[1] + v[1]][t[2] + v[2]] = square[t[0]][t[1]][t[2]];
@@ -311,10 +548,7 @@ public class ThreeDimBoard {
 			square[t[0]][t[1]][t[2]] = new Piece(7,0,t[0],t[1],t[2]);
 		if((t[0] == 7) && (t[1] != t[2]) && (t[1] != 7 - t[2]) && (gametype == 0))
 			square[t[0]][t[1]][t[2]] = new Piece(7,1,t[0],t[1],t[2]); // To replace barricades, which cannot be captured, only displaced.
-		if(turn == 0)
-			turn++;
-		else if(turn == 1)
-			turn--;
+		turn = 1 - turn;
 		
 		for(int k = 0; k < 8; k++)
 			for(int j = 0; j < 8; j++)
@@ -377,6 +611,8 @@ class Piece {
 	int piecetype; // -1 = empty, 0 = king, 1 = queen, 2 = prince/princess,
 	// 3 = Bishop, 4 = Knight, 5 = Rook, 6 = Pawn, 7 = Barricade
 	int[] location;
+	boolean captured;
+	boolean testCaptured;
 	boolean highlighted;
 	boolean targeted;
 	boolean castleValid; // Can only be true for kings and rooks
@@ -395,6 +631,8 @@ class Piece {
 		location[1] = x;
 		location[2] = y;
 		highlighted = false;
+		captured = false;
+		testCaptured = false;
 		
 		if(pt == 0 || pt == 5)
 			castleValid = true;
