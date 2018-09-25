@@ -1,20 +1,18 @@
 import java.awt.Graphics;
-import java.awt.Polygon;
-import java.awt.Color;
 
 public class ThreeDimBoard {
 	
 	Piece[][][] square; // The array of all positions on the board.
-	int gametype;
+	int gametype; // The type of game you want to play. Only one functional as of right now.
 	int turn;
-	Piece[][] kings; //King
-	Piece[][] queens; //Queen
-	Piece[][] princes; //Prince/Princess
+	Piece[][] kings;
+	Piece[][] queens;
+	Piece[][] princes;
 	Piece[][] princesses;
-	Piece[][] bishops; //Bishop
-	Piece[][] knights; //Knight
-	Piece[][] rooks; //Rook
-	Piece[][] pawns; //Pawn
+	Piece[][] bishops;
+	Piece[][] knights;
+	Piece[][] rooks;
+	Piece[][] pawns;
 	
 	public ThreeDimBoard(int gt) {
 		gametype = gt;
@@ -36,47 +34,56 @@ public class ThreeDimBoard {
 			for(int k = 0; k < 8; k++)
 				for(int j = 0; j < 8; j++)
 					for(int m = 0; m < 8; m++) {
-						square[k][j][m] = new Piece(-1,0,k,j,m);
+						square[k][j][m] = new Piece(PieceType.EMPTY,Player.WHITE,k,j,m);
 					}
 			
 			
 			for(int k = 0; k < 8; k++) {
 				for(int j = 0; j < 8; j++) {
-					square[1][k][j] = new Piece(6,0,1,k,j); // Pawns
-					square[6][k][j] = new Piece(6,1,6,k,j);
+					square[1][k][j] = new Piece(PieceType.PAWN,Player.WHITE,1,k,j);
+					square[6][k][j] = new Piece(PieceType.PAWN,Player.BLACK,6,k,j);
 					pawns[0][(8 * k) + j] = square[1][k][j];
 					pawns[1][(8 * k) + j] = square[6][k][j];
-					square[0][k][j] = new Piece(7,0,0,k,j); // Barricades, some of which are later overwritten.
-					square[7][k][j] = new Piece(7,1,7,k,j);
+					square[0][k][j] = new Piece(PieceType.BARRICADE,Player.WHITE,0,k,j);
+					square[7][k][j] = new Piece(PieceType.BARRICADE,Player.BLACK,7,k,j);
 				}
 			}
 			
 			for(int k = 0; k < 2; k++) {
 				
 				for(int j = 0; j < 2; j++) {
-					square[0][k*7][j*7] = new Piece(5,0,0,k*7,j*7); // Rooks
-					square[7][k*7][j*7] = new Piece(5,1,7,k*7,j*7);
+					square[0][k*7][j*7] = new Piece(PieceType.ROOK,Player.WHITE,0,k*7,j*7);
+					square[7][k*7][j*7] = new Piece(PieceType.ROOK,Player.BLACK,7,k*7,j*7);
 					rooks[0][(2 * k) + j] = square[0][k*7][j*7];
 					rooks[1][(2 * k) + j] = square[7][k*7][j*7];
-					square[0][(k*5)+1][(j*5)+1] = new Piece(4,0,0,(k*5)+1,(j*5)+1); // Knights
-					square[7][(k*5)+1][(j*5)+1] = new Piece(4,1,7,(k*5)+1,(j*5)+1);
+					square[0][(k*5)+1][(j*5)+1] = new Piece(PieceType.KNIGHT,Player.WHITE,0,(k*5)+1,(j*5)+1);
+					square[7][(k*5)+1][(j*5)+1] = new Piece(PieceType.KNIGHT,Player.BLACK,7,(k*5)+1,(j*5)+1);
 					knights[0][(2 * k) + j] = square[0][(k*5)+1][(j*5)+1];
 					knights[1][(2 * k) + j] = square[7][(k*5)+1][(j*5)+1];
-					square[0][(k*3)+2][(j*3)+2] = new Piece(3,0,0,(k*3)+2,(j*3)+2); // Bishops
-					square[7][(k*3)+2][(j*3)+2] = new Piece(3,1,7,(k*3)+2,(j*3)+2);
+					square[0][(k*3)+2][(j*3)+2] = new Piece(PieceType.BISHOP,Player.WHITE,0,(k*3)+2,(j*3)+2);
+					square[7][(k*3)+2][(j*3)+2] = new Piece(PieceType.BISHOP,Player.BLACK,7,(k*3)+2,(j*3)+2);
 					bishops[0][(2 * k) + j] = square[0][(k*3)+2][(j*3)+2];
 					bishops[1][(2 * k) + j] = square[7][(k*3)+2][(j*3)+2];
 				}
 				
-				square[k*7][4][4] = new Piece(0,k,k*7,4,4); // King
-				kings[k][0] = square[k*7][4][4];
-				square[k*7][3][4] = new Piece(1,k,k*7,3,4); // Queen
-				queens[k][0] = square[k*7][3][4];
-				square[k*7][3][3] = new Piece(2,k,k*7,3,3); // Prince
-				princes[k][0] = square[k*7][3][3];
-				square[k*7][4][3] = new Piece(2,k,k*7,4,3); // Princess
-				princesses[k][0] = square[k*7][4][3];
+				
 			}
+			square[0][4][4] = new Piece(PieceType.KING,Player.WHITE,0,4,4);
+			kings[0][0] = square[0][4][4];
+			square[0][3][4] = new Piece(PieceType.QUEEN,Player.WHITE,0,3,4);
+			queens[0][0] = square[0][3][4];
+			square[0][3][3] = new Piece(PieceType.PRINCE,Player.WHITE,0,3,3);
+			princes[0][0] = square[0][3][3];
+			square[0][4][3] = new Piece(PieceType.PRINCESS,Player.WHITE,0,4,3);
+			princesses[0][0] = square[0][4][3];
+			square[7][4][4] = new Piece(PieceType.KING,Player.BLACK,7,4,4);
+			kings[1][0] = square[7][4][4];
+			square[7][3][4] = new Piece(PieceType.QUEEN,Player.BLACK,7,3,4);
+			queens[1][0] = square[7][3][4];
+			square[7][3][3] = new Piece(PieceType.PRINCE,Player.BLACK,7,3,3);
+			princes[1][0] = square[7][3][3];
+			square[7][4][3] = new Piece(PieceType.PRINCESS,Player.BLACK,7,4,3);
+			princesses[1][0] = square[7][4][3];
 		}
 		
 		if(gt == 1) {
@@ -112,17 +119,17 @@ public class ThreeDimBoard {
 		int whitePoints = 0;
 		for(int k = 0; k < 64; k++) {
 			if(pawns[0][k].captured == false) {
-				if(pawns[0][k].piecetype == 6)
+				if(pawns[0][k].pt == PieceType.PAWN)
 					whitePoints += 1;
-				if(pawns[0][k].piecetype == 5)
+				if(pawns[0][k].pt == PieceType.ROOK)
 					whitePoints += 6;
-				if(pawns[0][k].piecetype == 4)
+				if(pawns[0][k].pt == PieceType.KNIGHT)
 					whitePoints += 3;
-				if(pawns[0][k].piecetype == 3)
+				if(pawns[0][k].pt == PieceType.BISHOP)
 					whitePoints += 3;
-				if(pawns[0][k].piecetype == 2)
+				if(pawns[0][k].pt == PieceType.PRINCE)
 					whitePoints += 4;
-				if(pawns[0][k].piecetype == 1)
+				if(pawns[0][k].pt == PieceType.QUEEN)
 					whitePoints += 12;
 			}
 		}
@@ -144,17 +151,17 @@ public class ThreeDimBoard {
 		int blackPoints = 0;
 		for(int k = 0; k < 64; k++) {
 			if(pawns[1][k].captured == false) {
-				if(pawns[1][k].piecetype == 6)
+				if(pawns[1][k].pt == PieceType.PAWN)
 					blackPoints += 1;
-				if(pawns[1][k].piecetype == 5)
+				if(pawns[1][k].pt == PieceType.ROOK)
 					blackPoints += 6;
-				if(pawns[1][k].piecetype == 4)
+				if(pawns[1][k].pt == PieceType.KNIGHT)
 					blackPoints += 3;
-				if(pawns[1][k].piecetype == 3)
+				if(pawns[1][k].pt == PieceType.BISHOP)
 					blackPoints += 3;
-				if(pawns[1][k].piecetype == 2)
+				if(pawns[1][k].pt == PieceType.PRINCE)
 					blackPoints += 4;
-				if(pawns[1][k].piecetype == 1)
+				if(pawns[1][k].pt == PieceType.QUEEN)
 					blackPoints += 12;
 			}
 		}
@@ -183,9 +190,9 @@ public class ThreeDimBoard {
 		boolean enPassantMove = false;
 		boolean returnValue = false;
 		temp = square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]];
-		if(square[t[0]][t[1]][t[2]].piecetype == 6) {
-			if(square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].piecetype == -1) {
-				if(v[0] == -((2 * square[t[0]][t[1]][t[2]].side)-1) && (Math.abs(v[1]) == 1 || Math.abs(v[2]) == 1) && 
+		if(square[t[0]][t[1]][t[2]].pt == PieceType.PAWN) {
+			if(square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].pt == PieceType.EMPTY) {
+				if((Math.abs(v[1]) == 1 || Math.abs(v[2]) == 1) && 
 						(Math.abs(v[1]) <= 1 && Math.abs(v[2]) <= 1)) {
 					temp = square[t[0]][t[1]+v[1]][t[2]+v[2]];
 					enPassantMove = true;
@@ -274,21 +281,21 @@ public class ThreeDimBoard {
 		
 			if(gametype == 0 && (t[0] + v[0] >= 0 && t[0] + v[0] < 8) && 
 					(t[1] + v[1] >= 0 && t[1] + v[1] < 8) && (t[2] + v[2] >= 0 && t[2] + v[2] < 8) && 
-					square[t[0]][t[1]][t[2]].piecetype != -1) {
-				if(square[t[0]][t[1]][t[2]].piecetype == 0) {
+					square[t[0]][t[1]][t[2]].pt != PieceType.EMPTY) {
+				if(square[t[0]][t[1]][t[2]].pt == PieceType.KING) {
 					
-					if(square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].piecetype == -1) {
+					if(square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].pt == PieceType.EMPTY) {
 						if((Math.abs(v[0]) == 1 || Math.abs(v[1]) == 1 || Math.abs(v[2]) == 1) && 
 								(Math.abs(v[0]) <= 1 && Math.abs(v[1]) <= 1 && Math.abs(v[2]) <= 1))
 							return true;
 					}
 					else if((Math.abs(v[0]) == 1 || Math.abs(v[1]) == 1 || Math.abs(v[2]) == 1) && 
 							(Math.abs(v[0]) <= 1 && Math.abs(v[1]) <= 1 && Math.abs(v[2]) <= 1) && 
-							(square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].side != square[t[0]][t[1]][t[2]].side))
+							(square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].p != square[t[0]][t[1]][t[2]].p))
 						return true;
 				}
 				
-				if(square[t[0]][t[1]][t[2]].piecetype == 1) {
+				if(square[t[0]][t[1]][t[2]].pt == PieceType.QUEEN) {
 					
 					if((Math.abs(v[0]) == Math.abs(v[1]) || Math.abs(v[0]) == 0 || Math.abs(v[1]) == 0) && 
 							(Math.abs(v[1]) == Math.abs(v[2]) || Math.abs(v[1]) == 0 || Math.abs(v[2]) == 0) &&
@@ -306,28 +313,28 @@ public class ThreeDimBoard {
 							maxv = Math.abs(v[2]);
 						
 						for(int k = 1; k < maxv; k++) {
-							if(square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].piecetype != -1)
+							if(square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].pt != PieceType.EMPTY)
 								blocked = true;
-							if(square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].piecetype != 7 || 
-									square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].side != square[t[0]][t[1]][t[2]].side)
+							if(square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].pt != PieceType.BARRICADE || 
+									square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].p != square[t[0]][t[1]][t[2]].p)
 								friendlyBarricaded = false;
-							if(square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].piecetype != 7 || 
-									square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].side == square[t[0]][t[1]][t[2]].side)
+							if(square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].pt != PieceType.BARRICADE || 
+									square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].p == square[t[0]][t[1]][t[2]].p)
 								hostileBarricaded = false;
 						}
 						
-						if(((square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].side != square[t[0]][t[1]][t[2]].side || 
-								square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].piecetype == -1) && !blocked) || 
-								(hostileBarricaded && square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].piecetype == 7 && 
-								square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].side != square[t[0]][t[1]][t[2]].side) || 
-								(friendlyBarricaded && square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].side != square[t[0]][t[1]][t[2]].side && 
-								square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].piecetype != -1)) {
+						if(((square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].p != square[t[0]][t[1]][t[2]].p || 
+								square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].pt == PieceType.EMPTY) && !blocked) || 
+								(hostileBarricaded && square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].pt == PieceType.BARRICADE && 
+								square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].p != square[t[0]][t[1]][t[2]].p) || 
+								(friendlyBarricaded && square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].p != square[t[0]][t[1]][t[2]].p && 
+								square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].pt != PieceType.EMPTY)) {
 							return true;
 						}
 					}
 				}
 				
-				if(square[t[0]][t[1]][t[2]].piecetype == 2) {
+				if(square[t[0]][t[1]][t[2]].pt == PieceType.PRINCE || square[t[0]][t[1]][t[2]].pt == PieceType.PRINCESS) {
 					
 					if((Math.abs(v[0]) == Math.abs(v[1]) || Math.abs(v[0]) == 0 || Math.abs(v[1]) == 0) && 
 							(Math.abs(v[1]) == Math.abs(v[2]) || Math.abs(v[1]) == 0 || Math.abs(v[2]) == 0) &&
@@ -348,28 +355,28 @@ public class ThreeDimBoard {
 							maxv = Math.abs(v[2]);
 						
 						for(int k = 1; k < maxv; k++) {
-							if(square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].piecetype != -1)
+							if(square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].pt != PieceType.EMPTY)
 								blocked = true;
-							if(square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].piecetype != 7 || 
-									square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].side != square[t[0]][t[1]][t[2]].side)
+							if(square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].pt != PieceType.BARRICADE || 
+									square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].p != square[t[0]][t[1]][t[2]].p)
 								friendlyBarricaded = false;
-							if(square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].piecetype != 7 || 
-									square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].side == square[t[0]][t[1]][t[2]].side)
+							if(square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].pt != PieceType.BARRICADE || 
+									square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].p == square[t[0]][t[1]][t[2]].p)
 								hostileBarricaded = false;
 						}
 						
-						if(((square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].side != square[t[0]][t[1]][t[2]].side || 
-								square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].piecetype == -1) && !blocked) || 
-								(hostileBarricaded && square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].piecetype == 7 && 
-								square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].side != square[t[0]][t[1]][t[2]].side) || 
-								(friendlyBarricaded && square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].side != square[t[0]][t[1]][t[2]].side && 
-								square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].piecetype != -1)) {
+						if(((square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].p != square[t[0]][t[1]][t[2]].p || 
+								square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].pt == PieceType.EMPTY) && !blocked) || 
+								(hostileBarricaded && square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].pt == PieceType.BARRICADE && 
+								square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].p != square[t[0]][t[1]][t[2]].p) || 
+								(friendlyBarricaded && square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].p != square[t[0]][t[1]][t[2]].p && 
+								square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].pt != PieceType.EMPTY)) {
 							return true;
 						}
 					}
 				}
 				
-				if(square[t[0]][t[1]][t[2]].piecetype == 3) {
+				if(square[t[0]][t[1]][t[2]].pt == PieceType.BISHOP) {
 					
 					if((Math.abs(v[0]) == Math.abs(v[1]) && Math.abs(v[1]) == Math.abs(v[2])) && 
 							Math.abs(v[0]) != 0) {
@@ -385,42 +392,42 @@ public class ThreeDimBoard {
 							maxv = Math.abs(v[2]);
 						
 						for(int k = 1; k < maxv; k++) {
-							if(square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].piecetype != -1)
+							if(square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].pt != PieceType.EMPTY)
 								blocked = true;
-							if(square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].piecetype != 7 || 
-									square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].side != square[t[0]][t[1]][t[2]].side)
+							if(square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].pt != PieceType.BARRICADE || 
+									square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].p != square[t[0]][t[1]][t[2]].p)
 								friendlyBarricaded = false;
-							if(square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].piecetype != 7 || 
-									square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].side == square[t[0]][t[1]][t[2]].side)
+							if(square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].pt != PieceType.BARRICADE || 
+									square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].p == square[t[0]][t[1]][t[2]].p)
 								hostileBarricaded = false;
 						}
 						
-						if(((square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].side != square[t[0]][t[1]][t[2]].side || 
-								square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].piecetype == -1) && !blocked) || 
-								(hostileBarricaded && square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].piecetype == 7 && 
-								square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].side != square[t[0]][t[1]][t[2]].side) || 
-								(friendlyBarricaded && square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].side != square[t[0]][t[1]][t[2]].side && 
-								square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].piecetype != -1)) {
+						if(((square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].p != square[t[0]][t[1]][t[2]].p || 
+								square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].pt == PieceType.EMPTY) && !blocked) || 
+								(hostileBarricaded && square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].pt == PieceType.BARRICADE && 
+								square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].p != square[t[0]][t[1]][t[2]].p) || 
+								(friendlyBarricaded && square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].p != square[t[0]][t[1]][t[2]].p && 
+								square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].pt != PieceType.EMPTY)) {
 							return true;
 						}
 					}
 				}
 				
-				if(square[t[0]][t[1]][t[2]].piecetype == 4) {
+				if(square[t[0]][t[1]][t[2]].pt == PieceType.KNIGHT) {
 					
 					if((Math.abs(v[0]) == 2 * Math.abs(v[1]) && (Math.abs(v[1]) == Math.abs(v[2])) || 
 							Math.abs(v[1]) == 2 * Math.abs(v[0]) && (Math.abs(v[0]) == Math.abs(v[2])) || 
 							Math.abs(v[2]) == 2 * Math.abs(v[0]) && (Math.abs(v[0]) == Math.abs(v[1]))) && 
 							Math.max(Math.max(Math.abs(v[0]), Math.abs(v[1])), Math.abs(v[2])) == 2) {
 						
-						if(square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].side != square[t[0]][t[1]][t[2]].side || 
-								square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].piecetype == -1) {
+						if(square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].p != square[t[0]][t[1]][t[2]].p || 
+								square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].pt == PieceType.EMPTY) {
 							return true;
 						}
 					}
 				}
 				
-				if(square[t[0]][t[1]][t[2]].piecetype == 5) {
+				if(square[t[0]][t[1]][t[2]].pt == PieceType.ROOK) {
 					
 					if((v[0] != 0 && v[1] == 0 && v[2] == 0) || 
 							(v[0] == 0 && v[1] != 0 && v[2] == 0) || 
@@ -438,47 +445,53 @@ public class ThreeDimBoard {
 							maxv = Math.abs(v[2]);
 						
 						for(int k = 1; k < maxv; k++) {
-							if(square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].piecetype != -1)
+							if(square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].pt != PieceType.EMPTY)
 								blocked = true;
-							if(square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].piecetype != 7 || 
-									square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].side != square[t[0]][t[1]][t[2]].side)
+							if(square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].pt != PieceType.BARRICADE || 
+									square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].p != square[t[0]][t[1]][t[2]].p)
 								friendlyBarricaded = false;
-							if(square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].piecetype != 7 || 
-									square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].side == square[t[0]][t[1]][t[2]].side)
+							if(square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].pt != PieceType.BARRICADE || 
+									square[t[0]+(k*v[0]/maxv)][t[1]+(k*v[1]/maxv)][t[2]+(k*v[2]/maxv)].p == square[t[0]][t[1]][t[2]].p)
 								hostileBarricaded = false;
 						}
 						
-						if(((square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].side != square[t[0]][t[1]][t[2]].side || 
-								square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].piecetype == -1) && !blocked) || 
-								(hostileBarricaded && square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].piecetype == 7 && 
-								square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].side != square[t[0]][t[1]][t[2]].side) || 
-								(friendlyBarricaded && square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].side != square[t[0]][t[1]][t[2]].side && 
-								square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].piecetype != -1)) {
+						if(((square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].p != square[t[0]][t[1]][t[2]].p || 
+								square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].pt == PieceType.EMPTY) && !blocked) || 
+								(hostileBarricaded && square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].pt == PieceType.BARRICADE && 
+								square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].p != square[t[0]][t[1]][t[2]].p) || 
+								(friendlyBarricaded && square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].p != square[t[0]][t[1]][t[2]].p && 
+								square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].pt != PieceType.EMPTY)) {
 							return true;
 						}
 					}
 				}
 				
-				if(square[t[0]][t[1]][t[2]].piecetype == 6) {
+				if(square[t[0]][t[1]][t[2]].pt == PieceType.PAWN) {
 				
-					if(square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].piecetype == -1 || square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].piecetype == 7) {
-						if(v[0] == -((2 * square[t[0]][t[1]][t[2]].side)-1) && v[1] == 0 && v[2] == 0)
+					if(square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].pt == PieceType.EMPTY || 
+							square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].pt == PieceType.BARRICADE) {
+						if(((v[0] == -1 && square[t[0]][t[1]][t[2]].p == Player.BLACK) || 
+								(v[0] == 1 && square[t[0]][t[1]][t[2]].p == Player.WHITE)) && v[1] == 0 && v[2] == 0)
 							return true;
-						if(square[t[0]][t[1]+v[1]][t[2]+v[2]].piecetype != -1) {
-							if(v[0] == -((2 * square[t[0]][t[1]][t[2]].side)-1) && (Math.abs(v[1]) == 1 || Math.abs(v[2]) == 1) && 
+						if(square[t[0]][t[1]+v[1]][t[2]+v[2]].pt != PieceType.EMPTY) {
+							if(((v[0] == -1 && square[t[0]][t[1]][t[2]].p == Player.BLACK) || 
+									(v[0] == 1 && square[t[0]][t[1]][t[2]].p == Player.WHITE)) && 
+									(Math.abs(v[1]) == 1 || Math.abs(v[2]) == 1) && 
 									(Math.abs(v[1]) <= 1 && Math.abs(v[2]) <= 1) && square[t[0]][t[1]+v[1]][t[2]+v[2]].enPassantValid) {
 								return true;
 							}
 						}
-						if(v[0] == -((4 * square[t[0]][t[1]][t[2]].side)-2) && v[1] == 0 && v[2] == 0 && 
-								square[t[0]][t[1]][t[2]].twoStepsValid == true && square[t[0]+(v[0]/2)][t[1]][t[2]].piecetype == -1) {
+						if(((v[0] == -2 && square[t[0]][t[1]][t[2]].p == Player.BLACK) || 
+								(v[0] == 2 && square[t[0]][t[1]][t[2]].p == Player.WHITE)) && v[1] == 0 && v[2] == 0 && 
+								square[t[0]][t[1]][t[2]].twoStepsValid == true && square[t[0]+(v[0]/2)][t[1]][t[2]].pt == PieceType.EMPTY) {
 							return true;
 						}
 					}
-					else if(v[0] == -((2 * square[t[0]][t[1]][t[2]].side)-1) && (Math.abs(v[1]) == 1 || Math.abs(v[2]) == 1) && 
+					else if(((v[0] == -1 && square[t[0]][t[1]][t[2]].p == Player.BLACK) || 
+							(v[0] == 1 && square[t[0]][t[1]][t[2]].p == Player.WHITE)) && (Math.abs(v[1]) == 1 || Math.abs(v[2]) == 1) && 
 							(Math.abs(v[1]) <= 1 && Math.abs(v[2]) <= 1) && 
-							square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].side != square[t[0]][t[1]][t[2]].side && 
-							square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].piecetype != 7)
+							square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].p != square[t[0]][t[1]][t[2]].p && 
+							square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].pt != PieceType.BARRICADE)
 						return true;
 				}
 			}
@@ -487,13 +500,14 @@ public class ThreeDimBoard {
 	
 	public void testMove(int[] t, int[] v) {
 		
-		if(square[t[0]][t[1]][t[2]].piecetype == 6) {
+		if(square[t[0]][t[1]][t[2]].pt == PieceType.PAWN) {
 			
-			if(square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].piecetype == -1) {
+			if(square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].pt == PieceType.EMPTY) {
 				
-				if(v[0] == -((2 * square[t[0]][t[1]][t[2]].side)-1) && (Math.abs(v[1]) == 1 || Math.abs(v[2]) == 1) && 
+				if(((v[0] == -1 && square[t[0]][t[1]][t[2]].p == Player.BLACK) || 
+						(v[0] == 1 && square[t[0]][t[1]][t[2]].p == Player.WHITE)) && (Math.abs(v[1]) == 1 || Math.abs(v[2]) == 1) && 
 						(Math.abs(v[1]) <= 1 && Math.abs(v[2]) <= 1)) {
-					square[t[0]][t[1]+v[1]][t[2]+v[2]] = new Piece(-1,0,t[0],t[1]+v[1],t[2]+v[2]);
+					square[t[0]][t[1]+v[1]][t[2]+v[2]] = new Piece(PieceType.EMPTY,Player.WHITE,t[0],t[1]+v[1],t[2]+v[2]);
 				}
 			}
 		}
@@ -502,34 +516,36 @@ public class ThreeDimBoard {
 		square[t[0] + v[0]][t[1] + v[1]][t[2] + v[2]].location[0] += v[0];
 		square[t[0] + v[0]][t[1] + v[1]][t[2] + v[2]].location[1] += v[1];
 		square[t[0] + v[0]][t[1] + v[1]][t[2] + v[2]].location[2] += v[2];
-		square[t[0]][t[1]][t[2]] = new Piece(-1,0,t[0],t[1],t[2]);
+		square[t[0]][t[1]][t[2]] = new Piece(PieceType.EMPTY,Player.WHITE,t[0],t[1],t[2]);
 	}
 	
 	
 	public void move(int[] t, int[] v) { // t is location vector, v is change vector.
 		
-		if(square[t[0] + v[0]][t[1] + v[1]][t[2] + v[2]].piecetype != -1) {
+		if(square[t[0] + v[0]][t[1] + v[1]][t[2] + v[2]].pt != PieceType.EMPTY) {
 			square[t[0] + v[0]][t[1] + v[1]][t[2] + v[2]].captured = true;
 		}
 		
-		if(square[t[0]][t[1]][t[2]].piecetype == 6) {
+		if(square[t[0]][t[1]][t[2]].pt == PieceType.PAWN) {
 			
-			if(v[0] == -((4 * square[t[0]][t[1]][t[2]].side)-2)) {
+			if(((v[0] == -2 && square[t[0]][t[1]][t[2]].p == Player.BLACK) || 
+					(v[0] == 1 && square[t[0]][t[1]][t[2]].p == Player.WHITE))) {
 				square[t[0]][t[1]][t[2]].twoStepsValid = false;
 				square[t[0]][t[1]][t[2]].enPassantValid = true;
 			}
 			
-			if(square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].piecetype == -1) {
+			if(square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].pt == PieceType.EMPTY) {
 				
-				if(v[0] == -((2 * square[t[0]][t[1]][t[2]].side)-1) && (Math.abs(v[1]) == 1 || Math.abs(v[2]) == 1) && 
+				if(((v[0] == -1 && square[t[0]][t[1]][t[2]].p == Player.BLACK) || 
+						(v[0] == 1 && square[t[0]][t[1]][t[2]].p == Player.WHITE)) && (Math.abs(v[1]) == 1 || Math.abs(v[2]) == 1) && 
 						(Math.abs(v[1]) <= 1 && Math.abs(v[2]) <= 1)) {
 					square[t[0]][t[1]+v[1]][t[2]+v[2]].captured = true;
-					square[t[0]][t[1]+v[1]][t[2]+v[2]] = new Piece(-1,0,t[0],t[1]+v[1],t[2]+v[2]);
+					square[t[0]][t[1]+v[1]][t[2]+v[2]] = new Piece(PieceType.EMPTY,Player.WHITE,t[0],t[1]+v[1],t[2]+v[2]);
 				}
 			}
 		}
 		
-		if(square[t[0]][t[1]][t[2]].piecetype == 0 || square[t[0]][t[1]][t[2]].piecetype == 5) {
+		if(square[t[0]][t[1]][t[2]].pt == PieceType.KING || square[t[0]][t[1]][t[2]].pt == PieceType.ROOK) {
 			square[t[0]][t[1]][t[2]].castleValid = false;
 		}
 		
@@ -537,18 +553,18 @@ public class ThreeDimBoard {
 		square[t[0] + v[0]][t[1] + v[1]][t[2] + v[2]].location[0] += v[0];
 		square[t[0] + v[0]][t[1] + v[1]][t[2] + v[2]].location[1] += v[1];
 		square[t[0] + v[0]][t[1] + v[1]][t[2] + v[2]].location[2] += v[2];
-		square[t[0]][t[1]][t[2]] = new Piece(-1,0,t[0],t[1],t[2]);
+		square[t[0]][t[1]][t[2]] = new Piece(PieceType.EMPTY,Player.WHITE,t[0],t[1],t[2]);
 		
 		if((t[0] == 0) && (t[1] != t[2]) && (t[1] != 7 - t[2]) && (gametype == 0))
-			square[t[0]][t[1]][t[2]] = new Piece(7,0,t[0],t[1],t[2]);
+			square[t[0]][t[1]][t[2]] = new Piece(PieceType.BARRICADE,Player.WHITE,t[0],t[1],t[2]);
 		if((t[0] == 7) && (t[1] != t[2]) && (t[1] != 7 - t[2]) && (gametype == 0))
-			square[t[0]][t[1]][t[2]] = new Piece(7,1,t[0],t[1],t[2]); // To replace barricades, which cannot be captured, only displaced.
+			square[t[0]][t[1]][t[2]] = new Piece(PieceType.BARRICADE,Player.BLACK,t[0],t[1],t[2]); // To replace barricades, which cannot be captured, only displaced.
 		turn = 1 - turn;
 		
 		for(int k = 0; k < 8; k++)
 			for(int j = 0; j < 8; j++)
 				for(int m = 0; m < 8; m++) {
-					if(square[k][j][m].side == turn)
+					if((square[k][j][m].p == Player.WHITE && turn == 0) || (square[k][j][m].p == Player.BLACK && turn == 1))
 						square[k][j][m].enPassantValid = false;
 				}
 		
@@ -567,7 +583,7 @@ public class ThreeDimBoard {
 							int[] v = new int[3];
 							t[0] = pawns[side][g].location[0]; t[1] = pawns[side][g].location[1]; t[2] = pawns[side][g].location[2];
 							v[0] = k - t[0]; v[1] = j - t[1]; v[2] = m - t[2];
-							if(moveValid(t, v) && !intoCheck(pawns[side][g].side, t, v) && !pawns[side][g].captured)
+							if(moveValid(t, v) && !intoCheck(side, t, v) && !pawns[side][g].captured)
 								returnValue = false;
 						}
 			}
@@ -580,15 +596,15 @@ public class ThreeDimBoard {
 							int[] v = new int[3];
 							t[0] = rooks[side][g].location[0]; t[1] = rooks[side][g].location[1]; t[2] = rooks[side][g].location[2];
 							v[0] = k - t[0]; v[1] = j - t[1]; v[2] = m - t[2];
-							if(moveValid(t, v) && !intoCheck(rooks[side][g].side, t, v) && !rooks[side][g].captured)
+							if(moveValid(t, v) && !intoCheck(side, t, v) && !rooks[side][g].captured)
 								returnValue = false;
 							t[0] = knights[side][g].location[0]; t[1] = knights[side][g].location[1]; t[2] = knights[side][g].location[2];
 							v[0] = k - t[0]; v[1] = j - t[1]; v[2] = m - t[2];
-							if(moveValid(t, v) && !intoCheck(knights[side][g].side, t, v) && !knights[side][g].captured)
+							if(moveValid(t, v) && !intoCheck(side, t, v) && !knights[side][g].captured)
 								returnValue = false;
 							t[0] = bishops[side][g].location[0]; t[1] = bishops[side][g].location[1]; t[2] = bishops[side][g].location[2];
 							v[0] = k - t[0]; v[1] = j - t[1]; v[2] = m - t[2];
-							if(moveValid(t, v) && !intoCheck(bishops[side][g].side, t, v) && !bishops[side][g].captured)
+							if(moveValid(t, v) && !intoCheck(side, t, v) && !bishops[side][g].captured)
 								returnValue = false;
 						}
 			}
@@ -600,19 +616,19 @@ public class ThreeDimBoard {
 						int[] v = new int[3];
 						t[0] = kings[side][0].location[0]; t[1] = kings[side][0].location[1]; t[2] = kings[side][0].location[2];
 						v[0] = k - t[0]; v[1] = j - t[1]; v[2] = m - t[2];
-						if(moveValid(t, v) && !intoCheck(kings[side][0].side, t, v))
+						if(moveValid(t, v) && !intoCheck(side, t, v))
 							returnValue = false;
 						t[0] = queens[side][0].location[0]; t[1] = queens[side][0].location[1]; t[2] = queens[side][0].location[2];
 						v[0] = k - t[0]; v[1] = j - t[1]; v[2] = m - t[2];
-						if(moveValid(t, v) && !intoCheck(queens[side][0].side, t, v) && !queens[side][0].captured)
+						if(moveValid(t, v) && !intoCheck(side, t, v) && !queens[side][0].captured)
 							returnValue = false;
 						t[0] = princes[side][0].location[0]; t[1] = princes[side][0].location[1]; t[2] = princes[side][0].location[2];
 						v[0] = k - t[0]; v[1] = j - t[1]; v[2] = m - t[2];
-						if(moveValid(t, v) && !intoCheck(princes[side][0].side, t, v) && !princes[side][0].captured)
+						if(moveValid(t, v) && !intoCheck(side, t, v) && !princes[side][0].captured)
 							returnValue = false;
 						t[0] = princesses[side][0].location[0]; t[1] = princesses[side][0].location[1]; t[2] = princesses[side][0].location[2];
 						v[0] = k - t[0]; v[1] = j - t[1]; v[2] = m - t[2];
-						if(moveValid(t, v) && !intoCheck(princesses[side][0].side, t, v) && !princesses[side][0].captured)
+						if(moveValid(t, v) && !intoCheck(side, t, v) && !princesses[side][0].captured)
 							returnValue = false;
 					}
 		}
@@ -621,7 +637,7 @@ public class ThreeDimBoard {
 	}
 	
 	public void target(Piece highlighted) {
-		if(highlighted.side == turn)
+		if((highlighted.p == Player.WHITE && turn == 0) || (highlighted.p == Player.BLACK && turn == 1))
 			for(int k = 0; k < 8; k++)
 				for(int j = 0; j < 8; j++)
 					for(int m = 0; m < 8; m++) {
@@ -629,7 +645,7 @@ public class ThreeDimBoard {
 						int[] v = new int[3];
 						t[0] = highlighted.location[0]; t[1] = highlighted.location[1]; t[2] = highlighted.location[2];
 						v[0] = k - t[0]; v[1] = j - t[1]; v[2] = m - t[2];
-						if(moveValid(t, v) && !intoCheck(highlighted.side, t, v))
+						if(moveValid(t, v) && !intoCheck(turn, t, v))
 							square[k][j][m].targeted = true;
 					}
 	}
@@ -664,272 +680,5 @@ public class ThreeDimBoard {
 					square[(k * zfact) + zpref][(j * xfact) + xpref][(m * yfact) + ypref].Draw(g, viewAngle, viewElevation);
 			}
 		}
-	}
-}
-
-class Piece {
-	
-	int side; // 0 = white, 1 = black, 2 = red, 3 = blue
-	int piecetype; // -1 = empty, 0 = king, 1 = queen, 2 = prince/princess,
-	// 3 = Bishop, 4 = Knight, 5 = Rook, 6 = Pawn, 7 = Barricade
-	int[] location;
-	boolean inCheck;
-	boolean captured;
-	boolean highlighted;
-	boolean targeted;
-	boolean castleValid; // Can only be true for kings and rooks
-	boolean enPassantValid; // Can only be true for pawns
-	boolean twoStepsValid; // Can only be true for pawns
-	
-	public Piece() {
-		
-	}
-	
-	public Piece(int pt, int s, int z, int x, int y) {
-		piecetype = pt;
-		side = s;
-		location = new int[3];
-		location[0] = z;
-		location[1] = x;
-		location[2] = y;
-		highlighted = false;
-		captured = false;
-		
-		if(pt == 0 || pt == 5)
-			castleValid = true;
-		else
-			castleValid = false;
-		
-		if(pt == 6)
-			twoStepsValid = true;
-		else
-			twoStepsValid = true;
-		
-		enPassantValid = false;
-		
-		inCheck = false;
-	}
-	
-	public void Draw(Graphics g, double viewAngle, double viewElevation) {
-		double[] x = {Math.cos(viewAngle), Math.sin(viewAngle) * Math.sin(viewElevation)};
-		double[] y = {Math.sin(viewAngle), - (Math.cos(viewAngle) * Math.sin(viewElevation))};
-		double z = - Math.cos(viewElevation);
-		double xfact = 70 * (location[1] - 3.5);
-		double yfact = 70 * (location[2] - 3.5);
-		double zfact = 70 * (location[0] - 3.5);
-		if(highlighted == false && inCheck == false) {
-			if(side == 0)
-				g.setColor(new Color(225,230,160));
-			if(side == 1)
-				g.setColor(new Color(40,20,20));
-			if(side == 2)
-				g.setColor(new Color(225,10,10));
-			if(side == 3)
-				g.setColor(new Color(20,10,200));
-		}
-		else if(highlighted == true && inCheck == false){
-			if(side == 0)
-				g.setColor(new Color(245,250,160));
-			if(side == 1)
-				g.setColor(new Color(60,40,20));
-			if(side == 2)
-				g.setColor(new Color(245,30,10));
-			if(side == 3)
-				g.setColor(new Color(40,30,200));
-		}
-		else if(highlighted == false && inCheck == true){
-			if(side == 0)
-				g.setColor(new Color(225,190,120));
-			if(side == 1)
-				g.setColor(new Color(80,20,20));
-			if(side == 2)
-				g.setColor(new Color(255,0,0));
-			if(side == 3)
-				g.setColor(new Color(60,10,160));
-		}
-		else if(highlighted == true && inCheck == true){
-			if(side == 0)
-				g.setColor(new Color(245,210,120));
-			if(side == 1)
-				g.setColor(new Color(100,40,20));
-			if(side == 2)
-				g.setColor(new Color(255,40,40));
-			if(side == 3)
-				g.setColor(new Color(80,30,160));
-		}
-		
-		
-		if(piecetype == 0) {
-			g.fillRect((int)Math.round(940 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(550 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)), 
-					40, 20);
-			Polygon p1= new Polygon();
-			p1.addPoint((int)Math.round(940 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(550 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(940 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(530 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(950 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(550 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(960 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(530 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(970 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(550 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(980 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(530 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(980 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(550 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			g.fillPolygon(p1);
-		}
-		
-		if(piecetype == 1) {
-			Polygon p1= new Polygon();
-			p1.addPoint((int)Math.round(945 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(570 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(935 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(535 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(950 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(550 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(950 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(530 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(960 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(548 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(970 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(530 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(970 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(550 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(985 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(535 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(975 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(570 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			g.fillPolygon(p1);
-		}
-		
-		if(piecetype == 2) {
-			Polygon p1= new Polygon();
-			p1.addPoint((int)Math.round(950 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(570 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(950 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(540 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(960 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(550 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(970 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(540 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(970 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(570 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			g.fillPolygon(p1);
-		}
-		
-		if(piecetype == 3) {
-			Polygon p1= new Polygon();
-			p1.addPoint((int)Math.round(945 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(570 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(950 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(550 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(945 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(535 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(960 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(520 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(975 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(535 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(970 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(550 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(975 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(570 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			g.fillPolygon(p1);
-		}
-		
-		if(piecetype == 4) {
-			Polygon p1= new Polygon();
-			p1.addPoint((int)Math.round(945 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(570 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(952 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(545 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(931 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(543 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(930 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(535 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(960 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(522 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(975 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(535 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(970 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(550 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(975 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(570 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			g.fillPolygon(p1);
-		}
-		
-		if(piecetype == 5) {
-			Polygon p1= new Polygon();
-			p1.addPoint((int)Math.round(945 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(570 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(950 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(550 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(945 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(550 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(945 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(535 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(951 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(535 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(951 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(540 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(957 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(540 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(957 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(535 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(963 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(535 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(963 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(540 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(969 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(540 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(969 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(535 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(975 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(535 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(975 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(550 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(970 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(550 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(975 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(570 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			g.fillPolygon(p1);
-		}
-		
-		if(piecetype == 6 && ThreeDimChessRunner.hidePawns == false) {
-			Polygon p1= new Polygon();
-			p1.addPoint((int)Math.round(950 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(570 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(952 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(555 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			g.fillOval((int)Math.round(950 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(540 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)), 20, 20);
-			p1.addPoint((int)Math.round(968 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(555 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(970 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(570 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			g.fillPolygon(p1);
-		}
-		
-		if(piecetype == 7 && ThreeDimChessRunner.hideBarricades == false) {
-			Polygon p1= new Polygon();
-			p1.addPoint((int)Math.round(940 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(570 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(942 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(555 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(978 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(555 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(980 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(570 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			g.fillPolygon(p1);
-		}
-		g.setColor(new Color(120, 120, 80));
-		
-		if(targeted) {
-			g.fillOval((int)Math.round(940 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(520 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)), 40, 40);
-		}
-		
-		g.setColor(Color.BLACK);
 	}
 }

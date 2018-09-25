@@ -86,9 +86,10 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 				t[k] = record.get(k);
 				v[k] = record.get(k+3);
 			}
-			if(game.moveValid(t, v) && game.turn == game.square[t[0]][t[1]][t[2]].side) {
+			if(game.moveValid(t, v) && ((game.turn == 0 && game.square[t[0]][t[1]][t[2]].p == Player.WHITE) || 
+					(game.turn == 1 && game.square[t[0]][t[1]][t[2]].p == Player.BLACK))) {
 				
-				if(!game.intoCheck(game.square[t[0]][t[1]][t[2]].side, t, v)) {
+				if(!game.intoCheck(game.turn, t, v)) {
 					game.kings[game.turn][0].inCheck = false;
 					game.move(t, v);
 					game.detarget();
@@ -557,13 +558,14 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 			for(int k = 0; k < 8; k++) {
 				for(int j = 0; j < 8; j++) {
 					for(int m = 0; m < 8; m++) {
-						if(game.square[k][j][m].piecetype != -1) {
+						if(game.square[k][j][m].pt != PieceType.EMPTY) {
 							double xfact = 70 * (game.square[k][j][m].location[1] - 3.5);
 							double yfact = 70 * (game.square[k][j][m].location[2] - 3.5);
 							double zfact = 70 * (game.square[k][j][m].location[0] - 3.5);
-							if((game.square[k][j][m].piecetype >= 0 && game.square[k][j][m].piecetype < 6) || 
-									(game.square[k][j][m].piecetype == 6 && hidePawns == false) || 
-									(game.square[k][j][m].piecetype == 7 && hideBarricades == false)) {
+							if((game.square[k][j][m].pt != PieceType.EMPTY && game.square[k][j][m].pt != PieceType.PAWN && 
+									game.square[k][j][m].pt != PieceType.BARRICADE) || 
+									(game.square[k][j][m].pt == PieceType.PAWN && hidePawns == false) || 
+									(game.square[k][j][m].pt == PieceType.BARRICADE && hideBarricades == false)) {
 								if(xpos >= (int)Math.round(935 + (xfact * x[0]) + (yfact * y[0])) && 
 										xpos <= (int)Math.round(985 + (xfact * x[0]) + (yfact * y[0])) && 
 										ypos >= (int)Math.round(560 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)) && 
