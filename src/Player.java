@@ -1,2 +1,2 @@
 
-public enum Player { WHITE, BLACK, RED, BLUE }
+public enum Player { NONE, WHITE, BLACK, RED, BLUE }
