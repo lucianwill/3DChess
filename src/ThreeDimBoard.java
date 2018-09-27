@@ -13,6 +13,7 @@ public class ThreeDimBoard {
 	Piece[][] knights;
 	Piece[][] rooks;
 	Piece[][] pawns;
+	Piece toPromote;
 	
 	private boolean noLegalMoves(int side) {
 		boolean returnValue = true;
@@ -151,6 +152,11 @@ public class ThreeDimBoard {
 		if (gt == 1) {
 			square = new Piece[8][8][8];
 		}
+	}
+	
+	public void promote(PieceType p) {
+		toPromote.pt = p;
+		toPromote = null;
 	}
 	
 	public int pieceCount(int side) {
@@ -358,7 +364,6 @@ public class ThreeDimBoard {
 			out = true;
 		return out;
 	}
-	
 	
 	public boolean moveValid(int[] t, int[] v) {
 		
@@ -659,7 +664,6 @@ public class ThreeDimBoard {
 		square[t[0]][t[1]][t[2]] = new Piece(PieceType.EMPTY,Player.WHITE,t[0],t[1],t[2]);
 	}
 	
-	
 	public void move(int[] t, int[] v) { // t is location vector, v is change vector.
 		
 		if (square[t[0] + v[0]][t[1] + v[1]][t[2] + v[2]].pt != PieceType.EMPTY) {
@@ -683,6 +687,10 @@ public class ThreeDimBoard {
 					square[t[0]][t[1]+v[1]][t[2]+v[2]].captured = true;
 					square[t[0]][t[1]+v[1]][t[2]+v[2]] = new Piece(PieceType.EMPTY,Player.WHITE,t[0],t[1]+v[1],t[2]+v[2]);
 				}
+			}
+			if (t[0] + v[0] == 7 && square[t[0]][t[1]][t[2]].p == Player.WHITE || 
+					t[0] + v[0] == 0 && square[t[0]][t[1]][t[2]].p == Player.BLACK) {
+				toPromote = square[t[0]][t[1]][t[2]];
 			}
 		}
 		
@@ -781,7 +789,7 @@ public class ThreeDimBoard {
 				}
 	}
 	
-	public void drawPieces(Graphics g, double viewAngle, double viewElevation) {
+	public void drawPieces(PieceType p, Graphics g, double viewAngle, double viewElevation) {
 		int xpref = 7;
 		int ypref = 0;
 		int zpref = 7;
@@ -802,6 +810,11 @@ public class ThreeDimBoard {
 				for (int m = 0; m < 8; m++)
 					square[(k * zfact) + zpref][(j * xfact) + xpref][(m * yfact) + ypref].Draw(g, viewAngle, viewElevation);
 			}
+		}
+		if (toPromote != null) {
+			Piece temp = new Piece(p, toPromote.p, toPromote.location[0], toPromote.location[1], toPromote.location[2]);
+			temp.highlighted = true;
+			temp.Draw(g, viewAngle, viewElevation);
 		}
 	}
 }

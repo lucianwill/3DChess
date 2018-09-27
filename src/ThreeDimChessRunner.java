@@ -30,6 +30,7 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 	boolean checkmate = false;
 	boolean stalemate = false;
 	Player winner;
+	PieceType pieceChoice = PieceType.QUEEN;
 	public static boolean hidePawns = false;
 	public static boolean hideBarricades = false;
 	ArrayList<Integer> record;
@@ -78,10 +79,9 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 	public static void main(String[] args){
 		ThreeDimChessRunner p = new ThreeDimChessRunner();
 		JFrame frame = new JFrame("3D Chess");	
-		frame.setSize(1920, 1080);
+		frame.setSize(1920,1080);
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setResizable(false);
 		frame.add(p);
 	}
 	
@@ -506,7 +506,7 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 			}
 		}
 		
-		game.drawPieces(g, viewAngle, viewElevation);
+		game.drawPieces(pieceChoice, g, viewAngle, viewElevation);
 	}
 
 	@Override
@@ -536,7 +536,21 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 			else
 				hidePawns = true;
 		}
-		
+		if (c == KeyEvent.VK_ESCAPE) {
+			System.exit(0);
+		}
+		if (c == KeyEvent.VK_SPACE) {
+			if(pieceChoice == PieceType.QUEEN)
+				pieceChoice = PieceType.PRINCE;
+			else if(pieceChoice == PieceType.PRINCE)
+				pieceChoice = PieceType.ROOK;
+			else if(pieceChoice == PieceType.ROOK)
+				pieceChoice = PieceType.BISHOP;
+			else if(pieceChoice == PieceType.BISHOP)
+				pieceChoice = PieceType.KNIGHT;
+			else if(pieceChoice == PieceType.KNIGHT)
+				pieceChoice = PieceType.QUEEN;
+		}
 	}
 
 	@Override
@@ -568,7 +582,7 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 		Piece closestClickedPiece = null;
 		double closestPoint = -50000;
 		
-		if (record.size() != 3) {
+		if (record.size() != 3 && game.toPromote == null) {
 			for (int k = 0; k < 8; k++) {
 				for (int j = 0; j < 8; j++) {
 					for (int m = 0; m < 8; m++) {
@@ -596,7 +610,7 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 			}
 		}
 		
-		if (record.size() == 3) {
+		if (record.size() == 3 && game.toPromote == null) {
 			for (int k = 0; k < 8; k++) {
 				for (int j = 0; j < 8; j++) {
 					for (int m = 0; m < 8; m++) {
@@ -618,7 +632,7 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 				}
 			}
 		}
-		if (closestClickedPiece != null) {
+		if (closestClickedPiece != null && game.toPromote == null) {
 			
 			if (record.size() != 3) {
 				
@@ -635,7 +649,7 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 				record.add(closestClickedPiece.location[2]);
 			}
 			
-			else if (record.size() == 3) {
+			else if (record.size() == 3 && game.toPromote == null) {
 				for (int k = 0; k < 8; k++)
 					for (int j = 0; j < 8; j++)
 						for (int m = 0; m < 8; m++)
@@ -655,7 +669,18 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 			game.detarget();
 			record = new ArrayList<Integer>();
 		}
-		
+		if (game.toPromote != null) {
+			double xfact = 70 * (game.toPromote.location[1] - 3.5);
+			double yfact = 70 * (game.toPromote.location[2] - 3.5);
+			double zfact = 70 * (game.toPromote.location[0] - 3.5);
+			if (xpos >= (int)Math.round(935 + (xfact * x[0]) + (yfact * y[0])) && 
+					xpos <= (int)Math.round(985 + (xfact * x[0]) + (yfact * y[0])) && 
+					ypos >= (int)Math.round(560 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)) && 
+					ypos <= (int)Math.round(600 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z))) {
+				game.promote(pieceChoice);
+				pieceChoice = PieceType.QUEEN;
+			}
+		}
 	}
 
 	@Override
