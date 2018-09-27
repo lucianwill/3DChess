@@ -247,11 +247,26 @@ public class ThreeDimBoard {
 	
 	public boolean intoCheck(int side, int[] t, int[] v) {
 		Piece temp = null;
+		Piece temp2 = null;
 		int[] tReverse = {t[0] + v[0],t[1] + v[1], t[2] + v[2]};
 		int[] vReverse = {- v[0], - v[1], - v[2]};
 		boolean enPassantMove = false;
+		boolean castleShort = false;
+		boolean castleLong = false;
 		boolean returnValue = false;
 		temp = square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]];
+		
+		/*if (square[t[0]][t[1]][t[2]].pt == PieceType.KING && t[1] == 4) {
+			if (v[0] == 0 && v[1] == 2 && v[2] == 2) {
+				temp2 = square[t[0]][5][5];
+				castleShort = true;
+			}
+			else if (v[0] == 0 && v[1] == -2 && v[2] == -2) {
+				temp2 = square[t[0]][3][3];
+				castleLong = true;
+			}
+		}*/
+		
 		if (square[t[0]][t[1]][t[2]].pt == PieceType.PAWN) {
 			if (square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].pt == PieceType.EMPTY) {
 				if ((Math.abs(v[1]) == 1 || Math.abs(v[2]) == 1) && 
@@ -271,9 +286,15 @@ public class ThreeDimBoard {
 		
 		if (enPassantMove) {
 			square[t[0]][t[1]+v[1]][t[2]+v[2]] = temp;
+			temp.captured = false;
 		}
 		else
 			square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]] = temp;
+		
+		if (castleShort)
+			square[t[0]][5][5] = temp2;
+		else if (castleLong)
+			square[t[0]][3][3] = temp2;
 		
 		return returnValue;
 	}
@@ -346,10 +367,29 @@ public class ThreeDimBoard {
 					square[t[0]][t[1]][t[2]].pt != PieceType.EMPTY) {
 				if (square[t[0]][t[1]][t[2]].pt == PieceType.KING) {
 					
+					int s;
+					if(square[t[0]][t[1]][t[2]].p == Player.WHITE)
+						s = 0;
+					else
+						s = 1;
+					
 					if (square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].pt == PieceType.EMPTY) {
 						if ((Math.abs(v[0]) == 1 || Math.abs(v[1]) == 1 || Math.abs(v[2]) == 1) && 
 								(Math.abs(v[0]) <= 1 && Math.abs(v[1]) <= 1 && Math.abs(v[2]) <= 1))
 							return true;
+						if (square[t[0]][t[1]][t[2]].castleValid) {
+							if (v[0] == 0 && v[1] == 2 && v[2] == 2 && 
+									square[t[0]][t[1] + 3][t[2] + 3].castleValid && 
+									square[t[0]][t[1] + 1][t[2] + 1].pt == PieceType.EMPTY && !inCheck(s)) {
+								return true;
+							}
+							else if (v[0] == 0 && v[1] == -2 && v[2] == -2 && 
+									square[t[0]][t[1] - 4][t[2] - 4].castleValid && 
+									square[t[0]][t[1] - 1][t[2] - 1].pt == PieceType.EMPTY && 
+									square[t[0]][t[1] - 3][t[2] - 3].pt == PieceType.EMPTY && !inCheck(s)) {
+								return true;
+							}
+						}
 					}
 					else if ((Math.abs(v[0]) == 1 || Math.abs(v[1]) == 1 || Math.abs(v[2]) == 1) && 
 							(Math.abs(v[0]) <= 1 && Math.abs(v[1]) <= 1 && Math.abs(v[2]) <= 1) && 
@@ -569,8 +609,46 @@ public class ThreeDimBoard {
 				if (((v[0] == -1 && square[t[0]][t[1]][t[2]].p == Player.BLACK) || 
 						(v[0] == 1 && square[t[0]][t[1]][t[2]].p == Player.WHITE)) && (Math.abs(v[1]) == 1 || Math.abs(v[2]) == 1) && 
 						(Math.abs(v[1]) <= 1 && Math.abs(v[2]) <= 1)) {
+					square[t[0]][t[1]+v[1]][t[2]+v[2]].captured = true;
 					square[t[0]][t[1]+v[1]][t[2]+v[2]] = new Piece(PieceType.EMPTY,Player.WHITE,t[0],t[1]+v[1],t[2]+v[2]);
 				}
+			}
+		}
+		
+		if (square[t[0]][t[1]][t[2]].pt == PieceType.KING && t[1] == 4) {
+			if (v[1] == 2) {
+				int[] t2 = {t[0], t[1] + 3, t[2] + 3};
+				int[] v2 = {0, -2, -2};
+				testMove(t2, v2);
+			}
+			else if (v[1] == -2) {
+				int[] t2 = {t[0], t[1] - 4, t[2] - 4};
+				int[] v2 = {0, 3, 3};
+				testMove(t2, v2);
+			}
+		}
+		else if (square[t[0]][t[1]][t[2]].pt == PieceType.KING && t[1] != 4) {
+			if (v[1] == -2) {
+				int[] t2 = {t[0], t[1] - 1, t[2] - 1};
+				int[] v2 = {0, 2, 2};
+				square[t[0] + v[0]][t[1] + v[1]][t[2] + v[2]] = square[t[0]][t[1]][t[2]];
+				square[t[0] + v[0]][t[1] + v[1]][t[2] + v[2]].location[0] += v[0];
+				square[t[0] + v[0]][t[1] + v[1]][t[2] + v[2]].location[1] += v[1];
+				square[t[0] + v[0]][t[1] + v[1]][t[2] + v[2]].location[2] += v[2];
+				square[t[0]][t[1]][t[2]] = new Piece(PieceType.EMPTY,Player.WHITE,t[0],t[1],t[2]);
+				testMove(t2, v2);
+				return;
+			}
+			else if (v[1] == 2) {
+				int[] t2 = {t[0], t[1] + 1, t[2] + 1};
+				int[] v2 = {0, -3, -3};
+				square[t[0] + v[0]][t[1] + v[1]][t[2] + v[2]] = square[t[0]][t[1]][t[2]];
+				square[t[0] + v[0]][t[1] + v[1]][t[2] + v[2]].location[0] += v[0];
+				square[t[0] + v[0]][t[1] + v[1]][t[2] + v[2]].location[1] += v[1];
+				square[t[0] + v[0]][t[1] + v[1]][t[2] + v[2]].location[2] += v[2];
+				square[t[0]][t[1]][t[2]] = new Piece(PieceType.EMPTY,Player.WHITE,t[0],t[1],t[2]);
+				testMove(t2, v2);
+				return;
 			}
 		}
 		
@@ -590,9 +668,10 @@ public class ThreeDimBoard {
 		
 		if (square[t[0]][t[1]][t[2]].pt == PieceType.PAWN) {
 			
+			
+			square[t[0]][t[1]][t[2]].twoStepsValid = false;
 			if (((v[0] == -2 && square[t[0]][t[1]][t[2]].p == Player.BLACK) || 
-					(v[0] == 1 && square[t[0]][t[1]][t[2]].p == Player.WHITE))) {
-				square[t[0]][t[1]][t[2]].twoStepsValid = false;
+					(v[0] == 2 && square[t[0]][t[1]][t[2]].p == Player.WHITE))) {
 				square[t[0]][t[1]][t[2]].enPassantValid = true;
 			}
 			
@@ -609,6 +688,21 @@ public class ThreeDimBoard {
 		
 		if (square[t[0]][t[1]][t[2]].pt == PieceType.KING || square[t[0]][t[1]][t[2]].pt == PieceType.ROOK) {
 			square[t[0]][t[1]][t[2]].castleValid = false;
+		}
+		
+		if (square[t[0]][t[1]][t[2]].pt == PieceType.KING && t[1] == 4) {
+			if (v[1] == 2) {
+				int[] t2 = {t[0], t[1] + 3, t[2] + 3};
+				int[] v2 = {0, -2, -2};
+				move(t2, v2);
+				turn = 1 - turn;
+			}
+			else if (v[1] == -2) {
+				int[] t2 = {t[0], t[1] - 4, t[2] - 4};
+				int[] v2 = {0, 3, 3};
+				move(t2, v2);
+				turn = 1 - turn;
+			}
 		}
 		
 		square[t[0] + v[0]][t[1] + v[1]][t[2] + v[2]] = square[t[0]][t[1]][t[2]];
@@ -659,9 +753,24 @@ public class ThreeDimBoard {
 						int[] v = new int[3];
 						t[0] = highlighted.location[0]; t[1] = highlighted.location[1]; t[2] = highlighted.location[2];
 						v[0] = k - t[0]; v[1] = j - t[1]; v[2] = m - t[2];
-						if (moveValid(t, v) && !intoCheck(turn, t, v))
+						if (highlighted.pt == PieceType.KING && k == 0 && j == 6 && m == 6) {
+							System.out.println();
+						}
+						if (moveValid(t, v) && !intoCheck(turn, t, v)) {
 							square[k][j][m].targeted = true;
+						}
+						if (highlighted.pt == PieceType.KING && Math.abs(v[1]) == 2) {
+							int[] v2 = {0, v[1]/2, v[2]/2};
+							int s;
+							if (square[t[0]][t[1]][t[2]].p == Player.WHITE)
+								s = 0;
+							else
+								s = 1;
+							if (intoCheck(s, t, v2))
+								square[k][j][m].targeted = false;
+						}
 					}
+
 	}
 	
 	public void detarget() {

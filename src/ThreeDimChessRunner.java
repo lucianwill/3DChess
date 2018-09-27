@@ -68,16 +68,16 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 		record = new ArrayList<Integer>();
 		winner = Player.NONE;
 		game = new ThreeDimBoard(0);
-		tm.start();
 		addMouseListener(this);
 		addKeyListener(this);
 		setFocusable(true);
 		setFocusTraversalKeysEnabled(false);
+		tm.start();
 	}
 	
 	public static void main(String[] args){
 		ThreeDimChessRunner p = new ThreeDimChessRunner();
-		JFrame frame= new JFrame("3D Chess");	
+		JFrame frame = new JFrame("3D Chess");	
 		frame.setSize(1920, 1080);
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

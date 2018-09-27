@@ -34,9 +34,10 @@ public class Piece {
 				castleValid = true;
 				break;
 			case ROOK:
-				castleValid = false;
+				castleValid = true;
 				break;
 		default:
+			castleValid = false;
 			break;
 		}
 		
