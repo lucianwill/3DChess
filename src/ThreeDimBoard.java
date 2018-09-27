@@ -256,7 +256,7 @@ public class ThreeDimBoard {
 		boolean returnValue = false;
 		temp = square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]];
 		
-		/*if (square[t[0]][t[1]][t[2]].pt == PieceType.KING && t[1] == 4) {
+		if (square[t[0]][t[1]][t[2]].pt == PieceType.KING && t[1] == 4) {
 			if (v[0] == 0 && v[1] == 2 && v[2] == 2) {
 				temp2 = square[t[0]][5][5];
 				castleShort = true;
@@ -265,7 +265,7 @@ public class ThreeDimBoard {
 				temp2 = square[t[0]][3][3];
 				castleLong = true;
 			}
-		}*/
+		}
 		
 		if (square[t[0]][t[1]][t[2]].pt == PieceType.PAWN) {
 			if (square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].pt == PieceType.EMPTY) {
