@@ -190,13 +190,13 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 			g.setColor(new Color(20,20,0));
 			
 			g.drawString("Resume", 878, 258);
-			g.drawString("Back to Menu", 878, 458);
+			g.drawString("Back to Menu", 868, 458);
 			g.drawString("Quit", 878, 658);
 			
 			g.setColor(Color.RED);
 			
 			g.drawString("Resume", 880, 260);
-			g.drawString("Back to Menu", 880, 460);
+			g.drawString("Back to Menu", 870, 460);
 			g.drawString("Quit", 880, 660);
 		}
 		else {
