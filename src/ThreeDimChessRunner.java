@@ -899,11 +899,12 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 			}
 			
 			if (xpos >= 1460 && xpos <= 1660 && 
-					ypos >= 600 && ypos <= 700)
+					ypos >= 600 && ypos <= 700 && 
+					!checkmate)
 				draw = true;
 			
 			if (xpos >= 1460 && xpos <= 1660 && 
-					ypos >= 800 && ypos <= 900) {
+					ypos >= 800 && ypos <= 900 && !draw) {
 				checkmate = true;
 				if (game.turn == 0)
 					winner = Player.BLACK;
