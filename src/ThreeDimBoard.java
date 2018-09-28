@@ -5,6 +5,7 @@ public class ThreeDimBoard {
 	Piece[][][] square; // The array of all positions on the board.
 	int gametype; // The type of game you want to play. Only one functional as of right now.
 	int turn;
+	int moveCount;
 	Piece[][] kings;
 	Piece[][] queens;
 	Piece[][] princes;
@@ -80,6 +81,7 @@ public class ThreeDimBoard {
 	public ThreeDimBoard(int gt) {
 		gametype = gt;
 		turn = 0;
+		moveCount = 0;
 		
 		if (gt == 0) {
 			square = new Piece[8][8][8]; // 1st number is height up the board 1-8. 2nd is width a-h and 3rd is depth a-h.
@@ -666,14 +668,18 @@ public class ThreeDimBoard {
 	
 	public void move(int[] t, int[] v) { // t is location vector, v is change vector.
 		
+		moveCount++;
+		
 		if (square[t[0] + v[0]][t[1] + v[1]][t[2] + v[2]].pt != PieceType.EMPTY) {
 			square[t[0] + v[0]][t[1] + v[1]][t[2] + v[2]].captured = true;
+			moveCount = 0;
 		}
 		
 		if (square[t[0]][t[1]][t[2]].pt == PieceType.PAWN) {
 			
-			
 			square[t[0]][t[1]][t[2]].twoStepsValid = false;
+			moveCount = 0;
+			
 			if (((v[0] == -2 && square[t[0]][t[1]][t[2]].p == Player.BLACK) || 
 					(v[0] == 2 && square[t[0]][t[1]][t[2]].p == Player.WHITE))) {
 				square[t[0]][t[1]][t[2]].enPassantValid = true;
