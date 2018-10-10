@@ -795,7 +795,7 @@ public class ThreeDimBoard {
 				}
 	}
 	
-	public void drawPieces(PieceType p, Graphics g, double viewAngle, double viewElevation) {
+	public void drawPieces(PieceType p, Graphics g, double viewAngle, double viewElevation, int squareSize, int screenWidth, int screenHeight) {
 		int xpref = 7;
 		int ypref = 0;
 		int zpref = 7;
@@ -814,13 +814,13 @@ public class ThreeDimBoard {
 		for (int k = 0; k < 8; k++) {
 			for (int j = 0; j < 8; j++) {
 				for (int m = 0; m < 8; m++)
-					square[(k * zfact) + zpref][(j * xfact) + xpref][(m * yfact) + ypref].Draw(g, viewAngle, viewElevation);
+					square[(k * zfact) + zpref][(j * xfact) + xpref][(m * yfact) + ypref].Draw(g, viewAngle, viewElevation, squareSize, screenWidth, screenHeight);
 			}
 		}
 		if (toPromote != null) {
 			Piece temp = new Piece(p, toPromote.p, toPromote.location[0], toPromote.location[1], toPromote.location[2]);
 			temp.highlighted = true;
-			temp.Draw(g, viewAngle, viewElevation);
+			temp.Draw(g, viewAngle, viewElevation, squareSize, screenWidth, screenHeight);
 		}
 	}
 }

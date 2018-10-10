@@ -46,13 +46,13 @@ public class Piece {
 		inCheck = false;
 	}
 	
-	public void Draw(Graphics g, double viewAngle, double viewElevation) {
+	public void Draw(Graphics g, double viewAngle, double viewElevation, int squareSize, int screenWidth, int screenHeight) {
 		double[] x = {Math.cos(viewAngle), Math.sin(viewAngle) * Math.sin(viewElevation)};
 		double[] y = {Math.sin(viewAngle), - (Math.cos(viewAngle) * Math.sin(viewElevation))};
 		double z = - Math.cos(viewElevation);
-		double xfact = 70 * (location[1] - 3.5);
-		double yfact = 70 * (location[2] - 3.5);
-		double zfact = 70 * (location[0] - 3.5);
+		double xfact = squareSize * (location[1] - 3.5);
+		double yfact = squareSize * (location[2] - 3.5);
+		double zfact = squareSize * (location[0] - 3.5);
 		
 		Color temp;
 		
@@ -158,39 +158,39 @@ public class Piece {
 			if (p == Player.BLACK)
 				g.setColor(new Color(240,240,180));
 			
-			p1.addPoint((int)Math.round(937 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(573 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(937 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(519 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(950 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(542 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(960 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(522 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(970 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(542 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(983 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(519 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(983 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(573 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 23 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 33 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 23 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 21 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 10 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 2 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 18 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 10 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 2 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 23 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 21 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 23 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 33 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
 			g.fillPolygon(p1);
 			
 			g.setColor(temp);
 			
 			p1= new Polygon();
-			p1.addPoint((int)Math.round(940 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(570 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(940 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(530 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(950 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(550 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(960 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(530 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(970 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(550 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(980 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(530 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(980 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(570 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 20 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 30 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 20 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 10 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 10 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 10 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 10 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 10 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 10 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 20 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 10 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 20 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 30 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
 			g.fillPolygon(p1);
 		}
 		
@@ -202,47 +202,47 @@ public class Piece {
 			if (p == Player.BLACK)
 				g.setColor(new Color(240,240,180));
 			
-			p1.addPoint((int)Math.round(942 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(573 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(928 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(525 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(947 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(542 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(947 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(520 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(960 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(540 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(973 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(520 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(973 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(542 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(992 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(525 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(978 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(573 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 18 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 33 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 32 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 15 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 13 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 2 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 13 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 20 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 13 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 20 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 13 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 2 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 32 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 15 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 18 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 33 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
 			g.fillPolygon(p1);
 			
 			g.setColor(temp);
 			
 			p1= new Polygon();
-			p1.addPoint((int)Math.round(945 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(570 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(935 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(535 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(950 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(550 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(950 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(530 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(960 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(548 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(970 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(530 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(970 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(550 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(985 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(535 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(975 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(570 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 15 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 30 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 25 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 5 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 10 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 10 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 10 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 10 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 8 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 10 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 10 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 10 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 10 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 25 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 5 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 15 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 30 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
 			g.fillPolygon(p1);
 		}
 		
@@ -254,31 +254,31 @@ public class Piece {
 			if (p == Player.BLACK)
 				g.setColor(new Color(240,240,180));
 			
-			p1.addPoint((int)Math.round(947 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(573 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(947 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(533 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(960 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(545 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(973 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(533 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(973 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(573 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 13+ (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 33 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 13 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 7 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 5 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 13 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 7 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 13 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 33 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
 			g.fillPolygon(p1);
 			
 			g.setColor(temp);
 			
 			p1= new Polygon();
-			p1.addPoint((int)Math.round(950 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(570 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(950 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(540 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(960 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(550 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(970 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(540 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(970 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(570 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 10 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 30 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 10 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 10 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 10 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 10 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 30 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
 			g.fillPolygon(p1);
 		}
 		
@@ -290,39 +290,39 @@ public class Piece {
 			if (p == Player.BLACK)
 				g.setColor(new Color(240,240,180));
 			
-			p1.addPoint((int)Math.round(941 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(573 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(946 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(550 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(941 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(535 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(960 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(515 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(979 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(535 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(974 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(550 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(979 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(573 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 19 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 33 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 14 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 10 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 19 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 5 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 25 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 19 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 5 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 14 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 10 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 19 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 33 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
 			g.fillPolygon(p1);
 			
 			g.setColor(temp);
 			
 			p1= new Polygon();
-			p1.addPoint((int)Math.round(945 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(570 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(950 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(550 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(945 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(535 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(960 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(520 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(975 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(535 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(970 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(550 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(975 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(570 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 15 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 30 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 10 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 10 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 15 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 5 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 20 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 15 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 5 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 10 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 10 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 15 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 30 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
 			g.fillPolygon(p1);
 		}
 		
@@ -334,43 +334,43 @@ public class Piece {
 			if (p == Player.BLACK)
 				g.setColor(new Color(240,240,180));
 			
-			p1.addPoint((int)Math.round(941 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(573 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(948 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(548 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(929 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(546 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(927 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(533 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(960 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(518 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(979 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(535 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(974 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(550 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(979 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(573 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 19 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 +33 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 12 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 8 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 31 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 6 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 33 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 7 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 22 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 19 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 5 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 14 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 10 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 19 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 33 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
 			g.fillPolygon(p1);
 			
 			g.setColor(temp);
 			
 			p1= new Polygon();
-			p1.addPoint((int)Math.round(945 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(570 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(952 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(545 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(931 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(543 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(930 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(535 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(960 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(522 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(975 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(535 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(970 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(550 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(975 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(570 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 15 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 30 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 8 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 5 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 29 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 3 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 30 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 5 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 18 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 15 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 5 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 10 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 10 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 15 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 30 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
 			g.fillPolygon(p1);
 		}
 		
@@ -382,59 +382,59 @@ public class Piece {
 			if (p == Player.BLACK)
 				g.setColor(new Color(240,240,180));
 			
-			p1.addPoint((int)Math.round(941 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(573 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(946 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(553 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(942 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(553 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(942 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(532 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(978 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(532 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(978 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(553 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(974 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(553 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(979 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(573 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 19 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 33 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 14 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 13 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 18 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 13 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 18 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 8 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 18 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 8 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 18 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 13 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 14 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 13 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 19 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 33 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
 			g.fillPolygon(p1);
 			
 			g.setColor(temp);
 			
 			p1= new Polygon();
-			p1.addPoint((int)Math.round(945 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(570 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(950 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(550 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(945 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(550 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(945 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(535 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(951 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(535 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(951 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(540 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(957 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(540 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(957 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(535 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(963 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(535 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(963 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(540 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(969 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(540 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(969 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(535 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(975 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(535 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(975 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(550 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(970 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(550 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(975 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(570 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 15 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 30 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 10 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 10 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 15 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 10 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 15 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 5 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 9 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 5 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 9 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 3 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 3 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 5 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 3 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 5 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 3 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 9 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 9 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 5 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 15 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 5 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 15 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 10 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 10 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 10 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 15 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 30 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
 			g.fillPolygon(p1);
 		}
 		
@@ -446,31 +446,31 @@ public class Piece {
 			if (p == Player.BLACK)
 				g.setColor(new Color(240,240,180));
 			
-			p1.addPoint((int)Math.round(946 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(573 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(948 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(555 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			g.fillOval((int)Math.round(947 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(537 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)), 26, 26);
-			p1.addPoint((int)Math.round(972 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(555 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(974 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(573 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 14 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 33 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 12 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 15 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			g.fillOval((int)Math.round(screenWidth/2 - 13 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 3 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)), 26, 26);
+			p1.addPoint((int)Math.round(screenWidth/2 + 12 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 15 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 14 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 33 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
 			g.fillPolygon(p1);
 			
 			g.setColor(temp);
 			
 			p1= new Polygon();
-			p1.addPoint((int)Math.round(950 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(570 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(952 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(555 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			g.fillOval((int)Math.round(950 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(540 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)), 20, 20);
-			p1.addPoint((int)Math.round(968 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(555 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(970 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(570 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 10 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 30 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 8 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 15 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			g.fillOval((int)Math.round(screenWidth/2 - 10 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)), 20, 20);
+			p1.addPoint((int)Math.round(screenWidth/2 + 8 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 15 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 10 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 30 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
 			g.fillPolygon(p1);
 		}
 		
@@ -482,34 +482,34 @@ public class Piece {
 			if (p == Player.BLACK)
 				g.setColor(new Color(240,240,180));
 			
-			p1.addPoint((int)Math.round(936 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(573 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(939 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(552 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(981 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(552 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(984 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(573 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 24 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 33 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 21 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 12 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 21 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 12 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 24 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 33 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
 			g.fillPolygon(p1);
 			
 			g.setColor(temp);
 			
 			p1= new Polygon();
-			p1.addPoint((int)Math.round(940 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(570 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(942 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(555 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(978 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(555 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
-			p1.addPoint((int)Math.round(980 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(570 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 20 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 30 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 - 18 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 15 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 18 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 15 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
+			p1.addPoint((int)Math.round(screenWidth/2 + 20 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 + 30 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)));
 			g.fillPolygon(p1);
 		}
 		g.setColor(new Color(120, 120, 80));
 		
 		if (targeted) {
-			g.fillOval((int)Math.round(940 + (xfact * x[0]) + (yfact * y[0])), 
-					(int)Math.round(520 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)), 40, 40);
+			g.fillOval((int)Math.round(screenWidth/2 - 20 + (xfact * x[0]) + (yfact * y[0])), 
+					(int)Math.round(screenHeight/2 - 20 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)), 40, 40);
 		}
 		
 		g.setColor(Color.BLACK);
