@@ -312,10 +312,6 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 		record = new ArrayList<Integer>();
 		winner = Player.NONE;
 		game = new ThreeDimBoard(0);
-		addMouseListener(this);
-		addKeyListener(this);
-		setFocusable(true);
-		setFocusTraversalKeysEnabled(false);
 		screenWidth = screenSize.width;
 		screenHeight = screenSize.height;
 		//screenWidth = 800;
@@ -350,6 +346,10 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 		frame.setExtendedState(Frame.MAXIMIZED_BOTH);
 		frame.setUndecorated(true);
 		//frame.setSize(800, 680);
+		frame.addMouseListener(p);
+		frame.addKeyListener(p);
+		frame.setFocusable(true);
+		frame.setFocusTraversalKeysEnabled(false);
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.add(p);
