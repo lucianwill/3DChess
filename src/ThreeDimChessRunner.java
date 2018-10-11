@@ -3,6 +3,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -415,374 +416,196 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
         repaint();
     }
 	
-	public void drawBoard(Graphics g) {
+	private void drawWallSection(Graphics g, int[] xValue, int[] yValue, int[] zValue) {
 		double[] x = {Math.cos(viewAngle), Math.sin(viewAngle) * Math.sin(viewElevation)};
 		double[] y = {Math.sin(viewAngle), - (Math.cos(viewAngle) * Math.sin(viewElevation))};
 		double z = - Math.cos(viewElevation);
+		int[] xMod;
+		int[] yMod;
+		int[] zMod;
+		
+		if (xValue.length == 1) {
+			xMod = new int[] {0,0,0};
+			yMod = new int[] {1,1,0};
+			zMod = new int[] {0,1,1};
+		}
+		else if (yValue.length == 1) {
+			xMod = new int[] {1,1,0};
+			yMod = new int[] {0,0,0};
+			zMod = new int[] {0,1,1};
+		}
+		else {
+			xMod = new int[] {1,1,0};
+			yMod = new int[] {0,1,1};
+			zMod = new int[] {0,0,0};
+		}
+		
+		for (int xnum : xValue) {
+			for (int ynum : yValue) {
+				for (int znum : zValue) {
+					Polygon p1 = new Polygon();
+					p1.addPoint((int)Math.round(screenWidth/2 + xnum*squareSize*x[0] + ynum*squareSize*y[0]), 
+							(int)Math.round(screenHeight/2 + ynum*squareSize*y[1] + xnum*squareSize*x[1] + squareSize*znum*z));
+					p1.addPoint((int)Math.round(screenWidth/2 + (xnum + xMod[0])*squareSize*x[0] + (ynum + yMod[0])*squareSize*y[0]), 
+							(int)Math.round(screenHeight/2 + (ynum + yMod[0])*squareSize*y[1] + (xnum + xMod[0])*squareSize*x[1] + squareSize*(znum + zMod[0])*z));
+					p1.addPoint((int)Math.round(screenWidth/2 + (xnum + xMod[1])*squareSize*x[0] + (ynum + yMod[1])*squareSize*y[0]), 
+							(int)Math.round(screenHeight/2 + (ynum + yMod[1])*squareSize*y[1] + (xnum + xMod[1])*squareSize*x[1] + squareSize*(znum + zMod[1])*z));
+					p1.addPoint((int)Math.round(screenWidth/2 + (xnum + xMod[2])*squareSize*x[0] + (ynum + yMod[2])*squareSize*y[0]), 
+							(int)Math.round(screenHeight/2 + (ynum + yMod[2])*squareSize*y[1] + (xnum + xMod[2])*squareSize*x[1] + squareSize*(znum + zMod[2])*z));
+					g.fillPolygon(p1);
+				}
+			}
+		}
+	}
+	
+	private void drawWall(Graphics g, int var, boolean top) {
+		double[] x = {Math.cos(viewAngle), Math.sin(viewAngle) * Math.sin(viewElevation)};
+		double[] y = {Math.sin(viewAngle), - (Math.cos(viewAngle) * Math.sin(viewElevation))};
+		double z = - Math.cos(viewElevation);
+		int[] xValue = null;
+		int[] yValue = null;
+		int[] zValue = null;
+		
+		if (top) {
+			g.setColor(new Color(160,160,120));
+			if (var == 0)
+				xValue = new int[] {4};
+			else if(var == 1)
+				yValue = new int[] {4};
+			else
+				zValue = new int[] {4};
+		}
+		else {
+			g.setColor(Color.BLACK);
+			if (var == 0)
+				xValue = new int[] {-4};
+			else if (var == 1)
+				yValue = new int[] {-4};
+			else
+				zValue = new int[] {-4};
+		}
+		
+		if (xValue == null)
+			xValue = new int[] {-4, -2, 0, 2};
+		
+		if (yValue == null)
+			yValue = new int[] {-4, -2, 0, 2};
+		
+		if (zValue == null)
+			zValue = new int[] {-4, -2, 0, 2};
+		
+		
+		drawWallSection(g, xValue, yValue, zValue);
+		
+		if (xValue.length > 1)
+			xValue = new int[] {-3, -1, 1, 3};
+		
+		if (yValue.length > 1)
+			yValue = new int[] {-3, -1, 1, 3};
+		
+		if (zValue.length > 1)
+			zValue = new int[] {-3, -1, 1, 3};
+		
+		drawWallSection(g, xValue, yValue, zValue);
+		
+		if (top)
+			g.setColor(Color.BLACK);
+		else
+			g.setColor(new Color(160,160,120));
+		
+		if (xValue.length > 1 && yValue.length > 1) {
+			xValue = new int[] {-4, -2, 0, 2};
+			yValue = new int[] {-3, -1, 1, 3};
+		}
+		else if (yValue.length > 1 && zValue.length > 1) {
+			yValue = new int[] {-4, -2, 0, 2};
+			zValue = new int[] {-3, -1, 1, 3};
+		}
+		else {
+			zValue = new int[] {-4, -2, 0, 2};
+			xValue = new int[] {-3, -1, 1, 3};
+		}
+		
+		drawWallSection(g, xValue, yValue, zValue);
+		
+		if (xValue.length > 1 && yValue.length > 1) {
+			xValue = new int[] {-3, -1, 1, 3};
+			yValue = new int[] {-4, -2, 0, 2};
+		}
+		else if (yValue.length > 1 && zValue.length > 1) {
+			yValue = new int[] {-3, -1, 1, 3};
+			zValue = new int[] {-4, -2, 0, 2};
+		}
+		else {
+			zValue = new int[] {-3, -1, 1, 3};
+			xValue = new int[] {-4, -2, 0, 2};
+		}
+		
+		drawWallSection(g, xValue, yValue, zValue);
+		
+		if (xValue.length > 1)
+			xValue = new int[] {-4, 4};
+		
+		if (yValue.length > 1)
+			yValue = new int[] {-4, 4};
+		
+		if (zValue.length > 1)
+			zValue = new int[] {-4, 4};
+		
+		Point[][] p = new Point[2][2];
 		
 		g.setColor(Color.BLACK);
 		
-		if (viewElevation >= 0) {
-			for (int k = 0; k < 4; k++) {
-				for (int j = 0; j < 4; j++) {
-					Polygon p1 = new Polygon();
-					Polygon p2 = new Polygon();
-					g.setColor(new Color(160,160,120));
-					p1.addPoint((int)Math.round(screenWidth/2 + ((k-2) * squareSize * 2 * x[0]) + ((((j-1) * squareSize * 2)-squareSize) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((((j-1) * squareSize * 2)-squareSize) * y[1]) + ((k-2) * squareSize * 2 * x[1]) - (squareSize * 4 * z)));
-					p1.addPoint((int)Math.round(screenWidth/2 + ((((k-2) * squareSize * 2) + squareSize) * x[0]) + ((((j-1) * squareSize * 2)-squareSize) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((((j-1) * squareSize * 2)-squareSize) * y[1]) + ((((k-2) * squareSize * 2) + squareSize) * x[1]) - (squareSize * 4 * z)));
-					p1.addPoint((int)Math.round(screenWidth/2 + ((((k-2) * squareSize * 2) + squareSize) * x[0]) + ((j-1) * squareSize * 2 * y[0])), 
-							(int)Math.round(screenHeight/2 + ((j-1) * squareSize * 2 * y[1]) + ((((k-2) * squareSize * 2) + squareSize) * x[1]) - (squareSize * 4 * z)));
-					p1.addPoint((int)Math.round(screenWidth/2 + ((k-2) * squareSize * 2 * x[0]) + ((j-1) * squareSize * 2 * y[0])), 
-							(int)Math.round(screenHeight/2 + ((j-1) * squareSize * 2 * y[1]) + ((k-2) * squareSize * 2 * x[1]) - (squareSize * 4 * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + ((k-1) * squareSize * 2 * x[0]) + ((((j-2) * squareSize * 2) + squareSize) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((((j-2) * squareSize * 2) + squareSize) * y[1]) + ((k-1) * squareSize * 2 * x[1]) - (squareSize * 4 * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + ((((k-1) * squareSize * 2) - squareSize) * x[0]) + ((((j-2) * squareSize * 2) + squareSize) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((((j-2) * squareSize * 2) + squareSize) * y[1]) + ((((k-1) * squareSize * 2) - squareSize) * x[1]) - (squareSize * 4 * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + ((((k-1) * squareSize * 2) - squareSize) * x[0]) + ((j-2) * squareSize * 2 * y[0])), 
-							(int)Math.round(screenHeight/2 + ((j-2) * squareSize * 2 * y[1]) + ((((k-1) * squareSize * 2) - squareSize) * x[1]) - (squareSize * 4 * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + ((k-1) * squareSize * 2 * x[0]) + ((j-2) * squareSize * 2 * y[0])), 
-							(int)Math.round(screenHeight/2 + ((j-2) * squareSize * 2 * y[1]) + ((k-1) * squareSize * 2 * x[1]) - (squareSize * 4 * z)));
-					g.fillPolygon(p1); //White squares
-					g.fillPolygon(p2); //White squares
-					p1 = new Polygon();
-					p2 = new Polygon();
-					g.setColor(Color.BLACK);
-					p1.addPoint((int)Math.round(screenWidth/2 + ((k-2) * squareSize * 2 * x[0]) + ((j-2) * squareSize * 2 * y[0])), 
-							(int)Math.round(screenHeight/2 + ((j-2) * squareSize * 2 * y[1]) + ((k-2) * squareSize * 2 * x[1]) - (squareSize * 4 * z)));
-					p1.addPoint((int)Math.round(screenWidth/2 + ((((k-2) * squareSize * 2) + squareSize) * x[0]) + ((j-2) * squareSize * 2 * y[0])), 
-							(int)Math.round(screenHeight/2 + ((j-2) * squareSize * 2 * y[1]) + ((((k-2) * squareSize * 2) + squareSize) * x[1]) - (squareSize * 4 * z)));
-					p1.addPoint((int)Math.round(screenWidth/2 + ((((k-2) * squareSize * 2) + squareSize) * x[0]) + ((((j-2) * squareSize * 2) + squareSize) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((((j-2) * squareSize * 2) + squareSize) * y[1]) + ((((k-2) * squareSize * 2) + squareSize) * x[1]) - (squareSize * 4 * z)));
-					p1.addPoint((int)Math.round(screenWidth/2 + ((k-2) * squareSize * 2 * x[0]) + ((((j-2) * squareSize * 2) + squareSize) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((((j-2) * squareSize * 2) + squareSize) * y[1]) + ((k-2) * squareSize * 2 * x[1]) - (squareSize * 4 * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + ((k-1) * squareSize * 2 * x[0]) + ((j-1) * squareSize * 2 * y[0])), 
-							(int)Math.round(screenHeight/2 + ((j-1) * squareSize * 2 * y[1]) + ((k-1) * squareSize * 2 * x[1]) - (squareSize * 4 * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + ((((k-1) * squareSize * 2) - squareSize) * x[0]) + ((j-1) * squareSize * 2 * y[0])), 
-							(int)Math.round(screenHeight/2 + ((j-1) * squareSize * 2 * y[1]) + ((((k-1) * squareSize * 2) - squareSize) * x[1]) - (squareSize * 4 * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + ((((k-1) * squareSize * 2) - squareSize) * x[0]) + ((((j-1) * squareSize * 2) - squareSize) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((((j-1) * squareSize * 2) - squareSize) * y[1]) + ((((k-1) * squareSize * 2) - squareSize) * x[1]) - (squareSize * 4 * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + ((k-1) * squareSize * 2 * x[0]) + ((((j-1) * squareSize * 2) - squareSize) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((((j-1) * squareSize * 2) - squareSize) * y[1]) + ((k-1) * squareSize * 2 * x[1]) - (squareSize * 4 * z)));
-					g.fillPolygon(p1); //Black squares
-					g.fillPolygon(p2); //Black squares
+		if (xValue.length == 1)
+			for (int k = 0; k < yValue.length; k++) {
+				for (int j = 0; j < zValue.length; j++) {
+					p[k][j] = new Point((int)Math.round(screenWidth/2 + xValue[0]*squareSize*x[0] + yValue[k]*squareSize*y[0]), 
+							(int)Math.round(screenHeight/2 + yValue[k]*squareSize*y[1] + xValue[0]*squareSize*x[1] + squareSize*zValue[j]*z));
 				}
 			}
-			
-			for (int k = -squareSize * 4; k < squareSize * 5; k += squareSize * 5) {
-				g.drawLine((int)Math.round(screenWidth/2 + (k * x[0]) + (squareSize * 4 * y[0])), 
-						(int)Math.round(screenHeight/2 + (squareSize * 4 * y[1]) + (k * x[1]) - (squareSize * 4 * z)), 
-						(int)Math.round(screenWidth/2 + (k * x[0]) - (squareSize * 4 * y[0])), 
-						(int)Math.round(screenHeight/2 - (squareSize * 4 * y[1]) + (k * x[1]) - (squareSize * 4 * z))); // Draw bottom length board lines.
-				g.drawLine((int)Math.round(screenWidth/2 - (squareSize * 4 * x[0]) + (k * y[0])), 
-						(int)Math.round(screenHeight/2 + (k * y[1]) - (squareSize * 4 * x[1]) - (squareSize * 4 * z)), 
-						(int)Math.round(screenWidth/2 + (squareSize * 4 * x[0]) + (k * y[0])), 
-						(int)Math.round(screenHeight/2 + (k * y[1]) + (squareSize * 4 * x[1]) - (squareSize * 4 * z))); // Draw bottom width board lines.
-			}
-		}
 		
-		else {
-			for (int k = 0; k < 4; k++) {
-				for (int j = 0; j < 4; j++) {
-					Polygon p1 = new Polygon();
-					Polygon p2 = new Polygon();
-					g.setColor(Color.BLACK);
-					p1.addPoint((int)Math.round(screenWidth/2 + ((k-2) * squareSize * 2 * x[0]) + ((((j-1) * squareSize * 2)-squareSize) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((((j-1) * squareSize * 2)-squareSize) * y[1]) + ((k-2) * squareSize * 2 * x[1]) + (squareSize * 4 * z)));
-					p1.addPoint((int)Math.round(screenWidth/2 + ((((k-2) * squareSize * 2) + squareSize) * x[0]) + ((((j-1) * squareSize * 2)-squareSize) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((((j-1) * squareSize * 2)-squareSize) * y[1]) + ((((k-2) * squareSize * 2) + squareSize) * x[1]) + (squareSize * 4 * z)));
-					p1.addPoint((int)Math.round(screenWidth/2 + ((((k-2) * squareSize * 2) + squareSize) * x[0]) + ((j-1) * squareSize * 2 * y[0])), 
-							(int)Math.round(screenHeight/2 + ((j-1) * squareSize * 2 * y[1]) + ((((k-2) * squareSize * 2) + squareSize) * x[1]) + (squareSize * 4 * z)));
-					p1.addPoint((int)Math.round(screenWidth/2 + ((k-2) * squareSize * 2 * x[0]) + ((j-1) * squareSize * 2 * y[0])), 
-							(int)Math.round(screenHeight/2 + ((j-1) * squareSize * 2 * y[1]) + ((k-2) * squareSize * 2 * x[1]) + (squareSize * 4 * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + ((k-1) * squareSize * 2 * x[0]) + ((((j-2) * squareSize * 2) + squareSize) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((((j-2) * squareSize * 2) + squareSize) * y[1]) + ((k-1) * squareSize * 2 * x[1]) + (squareSize * 4 * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + ((((k-1) * squareSize * 2) - squareSize) * x[0]) + ((((j-2) * squareSize * 2) + squareSize) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((((j-2) * squareSize * 2) + squareSize) * y[1]) + ((((k-1) * squareSize * 2) - squareSize) * x[1]) + (squareSize * 4 * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + ((((k-1) * squareSize * 2) - squareSize) * x[0]) + ((j-2) * squareSize * 2 * y[0])), 
-							(int)Math.round(screenHeight/2 + ((j-2) * squareSize * 2 * y[1]) + ((((k-1) * squareSize * 2) - squareSize) * x[1]) + (squareSize * 4 * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + ((k-1) * squareSize * 2 * x[0]) + ((j-2) * squareSize * 2 * y[0])), 
-							(int)Math.round(screenHeight/2 + ((j-2) * squareSize * 2 * y[1]) + ((k-1) * squareSize * 2 * x[1]) + (squareSize * 4 * z)));
-					g.fillPolygon(p1);
-					g.fillPolygon(p2);
-					p1 = new Polygon();
-					p2 = new Polygon();
-					g.setColor(new Color(160,160,120));
-					p1.addPoint((int)Math.round(screenWidth/2 + ((k-2) * squareSize * 2 * x[0]) + ((j-2) * squareSize * 2 * y[0])), 
-							(int)Math.round(screenHeight/2 + ((j-2) * squareSize * 2 * y[1]) + ((k-2) * squareSize * 2 * x[1]) + (squareSize * 4 * z)));
-					p1.addPoint((int)Math.round(screenWidth/2 + ((((k-2) * squareSize * 2) + squareSize) * x[0]) + ((j-2) * squareSize * 2 * y[0])), 
-							(int)Math.round(screenHeight/2 + ((j-2) * squareSize * 2 * y[1]) + ((((k-2) * squareSize * 2) + squareSize) * x[1]) + (squareSize * 4 * z)));
-					p1.addPoint((int)Math.round(screenWidth/2 + ((((k-2) * squareSize * 2) + squareSize) * x[0]) + ((((j-2) * squareSize * 2) + squareSize) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((((j-2) * squareSize * 2) + squareSize) * y[1]) + ((((k-2) * squareSize * 2) + squareSize) * x[1]) + (squareSize * 4 * z)));
-					p1.addPoint((int)Math.round(screenWidth/2 + ((k-2) * squareSize * 2 * x[0]) + ((((j-2) * squareSize * 2) + squareSize) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((((j-2) * squareSize * 2) + squareSize) * y[1]) + ((k-2) * squareSize * 2 * x[1]) + (squareSize * 4 * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + ((k-1) * squareSize * 2 * x[0]) + ((j-1) * squareSize * 2 * y[0])), 
-							(int)Math.round(screenHeight/2 + ((j-1) * squareSize * 2 * y[1]) + ((k-1) * squareSize * 2 * x[1]) + (squareSize * 4 * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + ((((k-1) * squareSize * 2) - squareSize) * x[0]) + ((j-1) * squareSize * 2 * y[0])), 
-							(int)Math.round(screenHeight/2 + ((j-1) * squareSize * 2 * y[1]) + ((((k-1) * squareSize * 2) - squareSize) * x[1]) + (squareSize * 4 * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + ((((k-1) * squareSize * 2) - squareSize) * x[0]) + ((((j-1) * squareSize * 2) - squareSize) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((((j-1) * squareSize * 2) - squareSize) * y[1]) + ((((k-1) * squareSize * 2) - squareSize) * x[1]) + (squareSize * 4 * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + ((k-1) * squareSize * 2 * x[0]) + ((((j-1) * squareSize * 2) - squareSize) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((((j-1) * squareSize * 2) - squareSize) * y[1]) + ((k-1) * squareSize * 2 * x[1]) + (squareSize * 4 * z)));
-					g.fillPolygon(p1);
-					g.fillPolygon(p2);
-					g.setColor(Color.BLACK);
+		else if (yValue.length == 1)
+			for (int k = 0; k < xValue.length; k++) {
+				for (int j = 0; j < zValue.length; j++) {
+					p[k][j] = new Point((int)Math.round(screenWidth/2 + squareSize*xValue[k]*x[0] + squareSize*yValue[0]*y[0]), 
+							(int)Math.round(screenHeight/2 + squareSize*yValue[0]*y[1] + squareSize*xValue[k]*x[1] + squareSize*zValue[j]*z));
 				}
 			}
-			
-			for (int k = -squareSize * 4; k < squareSize * 5; k += squareSize * 5) {
-				g.drawLine((int)Math.round(screenWidth/2 + (k * x[0]) + (squareSize * 4 * y[0])), 
-						(int)Math.round(screenHeight/2 + (squareSize * 4 * y[1]) + (k * x[1]) + (squareSize * 4 * z)), 
-						(int)Math.round(screenWidth/2 + (k * x[0]) - (squareSize * 4 * y[0])), 
-						(int)Math.round(screenHeight/2 - (squareSize * 4 * y[1]) + (k * x[1]) + (squareSize * 4 * z))); // Draw top length board lines.
-				g.drawLine((int)Math.round(screenWidth/2 - (squareSize * 4 * x[0]) + (k * y[0])), 
-						(int)Math.round(screenHeight/2 + (k * y[1]) - (squareSize * 4 * x[1]) + (squareSize * 4 * z)), 
-						(int)Math.round(screenWidth/2 + (squareSize * 4 * x[0]) + (k * y[0])), 
-						(int)Math.round(screenHeight/2 + (k * y[1]) + (squareSize * 4 * x[1]) + (squareSize * 4 * z))); // Draw top width board lines.
-			}
-		}
 		
-		if (viewAngle < Math.PI) {
-			for (int k = -squareSize * 4; k < squareSize * 4; k+=squareSize * 2) {
-				for (int j = -squareSize * 4; j < squareSize * 4; j+=squareSize * 2) {
-					Polygon p1 = new Polygon();
-					Polygon p2 = new Polygon();
-					g.setColor(Color.BLACK);
-					p1.addPoint((int)Math.round(screenWidth/2 - (squareSize * 4 * x[0]) + (k * y[0])), 
-							(int)Math.round(screenHeight/2 + (k * y[1]) - (squareSize * 4 * x[1]) + (j * z)));
-					p1.addPoint((int)Math.round(screenWidth/2 - (squareSize * 4 * x[0]) + ((k+squareSize) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((k+squareSize) * y[1]) - (squareSize * 4 * x[1]) + (j * z)));
-					p1.addPoint((int)Math.round(screenWidth/2 - (squareSize * 4 * x[0]) + ((k+squareSize) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((k+squareSize) * y[1]) - (squareSize * 4 * x[1]) + ((j+squareSize) * z)));
-					p1.addPoint((int)Math.round(screenWidth/2 - (squareSize * 4 * x[0]) + (k * y[0])), 
-							(int)Math.round(screenHeight/2 + (k * y[1]) - (squareSize * 4 * x[1]) + ((j+squareSize) * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 - (squareSize * 4 * x[0]) + ((k+squareSize) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((k+squareSize) * y[1]) - (squareSize * 4 * x[1]) + ((j+squareSize) * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 - (squareSize * 4 * x[0]) + ((k+squareSize * 2) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((k+squareSize * 2) * y[1]) - (squareSize * 4 * x[1]) + ((j+squareSize) * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 - (squareSize * 4 * x[0]) + ((k+squareSize * 2) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((k+squareSize * 2) * y[1]) - (squareSize * 4 * x[1]) + ((j+squareSize * 2) * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 - (squareSize * 4 * x[0]) + ((k+squareSize) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((k+squareSize) * y[1]) - (squareSize * 4 * x[1]) + ((j+squareSize * 2) * z)));
-					g.fillPolygon(p1);
-					g.fillPolygon(p2);
-					p1 = new Polygon();
-					p2 = new Polygon();
-					g.setColor(new Color(160,160,120));
-					p1.addPoint((int)Math.round(screenWidth/2 - (squareSize * 4 * x[0]) + ((k+squareSize) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((k+squareSize) * y[1]) - (squareSize * 4 * x[1]) + (j * z)));
-					p1.addPoint((int)Math.round(screenWidth/2 - (squareSize * 4 * x[0]) + ((k+squareSize * 2) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((k+squareSize * 2) * y[1]) - (squareSize * 4 * x[1]) + (j * z)));
-					p1.addPoint((int)Math.round(screenWidth/2 - (squareSize * 4 * x[0]) + ((k+squareSize * 2) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((k+squareSize * 2) * y[1]) - (squareSize * 4 * x[1]) + ((j+squareSize) * z)));
-					p1.addPoint((int)Math.round(screenWidth/2 - (squareSize * 4 * x[0]) + ((k+squareSize) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((k+squareSize) * y[1]) - (squareSize * 4 * x[1]) + ((j+squareSize) * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 - (squareSize * 4 * x[0]) + (k * y[0])), 
-							(int)Math.round(screenHeight/2 + (k * y[1]) - (squareSize * 4 * x[1]) + ((j+squareSize) * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 - (squareSize * 4 * x[0]) + ((k+squareSize) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((k+squareSize) * y[1]) - (squareSize * 4 * x[1]) + ((j+squareSize) * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 - (squareSize * 4 * x[0]) + ((k+squareSize) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((k+squareSize) * y[1]) - (squareSize * 4 * x[1]) + ((j+squareSize * 2) * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 - (squareSize * 4 * x[0]) + (k * y[0])), 
-							(int)Math.round(screenHeight/2 + (k * y[1]) - (squareSize * 4 * x[1]) + ((j+squareSize * 2) * z)));
-					g.fillPolygon(p1);
-					g.fillPolygon(p2);
-					g.setColor(Color.BLACK);
+		else
+			for (int k = 0; k < xValue.length; k++) {
+				for (int j = 0; j < yValue.length; j++) {
+					p[k][j] = new Point((int)Math.round(screenWidth/2 + squareSize*xValue[k]*x[0] + squareSize*yValue[j]*y[0]), 
+							(int)Math.round(screenHeight/2 + squareSize*yValue[j]*y[1] + squareSize*xValue[k]*x[1] + squareSize*zValue[0]*z));
 				}
 			}
-			
-			for (int k = -squareSize * 4; k < squareSize * 5; k += squareSize * 5) {
-				g.drawLine((int)Math.round(screenWidth/2 - (squareSize * 4 * x[0]) + (k * y[0])), 
-						(int)Math.round(screenHeight/2 + (k * y[1]) - (squareSize * 4 * x[1]) + (squareSize * 4 * z)), 
-						(int)Math.round(screenWidth/2 - (squareSize * 4 * x[0]) + (k * y[0])), 
-						(int)Math.round(screenHeight/2 + (k * y[1]) - (squareSize * 4 * x[1]) - (squareSize * 4 * z))); // Draw back vertical board lines.
-				g.drawLine((int)Math.round(screenWidth/2 - (squareSize * 4 * x[0]) + (squareSize * 4 * y[0])), 
-						(int)Math.round(screenHeight/2 + (squareSize * 4 * y[1]) - (squareSize * 4 * x[1]) + (k * z)), 
-						(int)Math.round(screenWidth/2 - (squareSize * 4 * x[0]) - (squareSize * 4 * y[0])), 
-						(int)Math.round(screenHeight/2 - (squareSize * 4 * y[1]) - (squareSize * 4 * x[1]) + (k * z))); // Draw back horizontal board lines.
-			}
-		}
 		
-		else {
-			for (int k = -squareSize * 4; k < squareSize * 4; k+=squareSize * 2) {
-				for (int j = -squareSize * 4; j < squareSize * 4; j+=squareSize * 2) {
-					Polygon p1 = new Polygon();
-					Polygon p2 = new Polygon();
-					g.setColor(new Color(160,160,120));
-					p1.addPoint((int)Math.round(screenWidth/2 + (squareSize * 4 * x[0]) + (k * y[0])), 
-							(int)Math.round(screenHeight/2 + (k * y[1]) + (squareSize * 4 * x[1]) + (j * z)));
-					p1.addPoint((int)Math.round(screenWidth/2 + (squareSize * 4 * x[0]) + ((k+squareSize) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((k+squareSize) * y[1]) + (squareSize * 4 * x[1]) + (j * z)));
-					p1.addPoint((int)Math.round(screenWidth/2 + (squareSize * 4 * x[0]) + ((k+squareSize) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((k+squareSize) * y[1]) + (squareSize * 4 * x[1]) + ((j+squareSize) * z)));
-					p1.addPoint((int)Math.round(screenWidth/2 + (squareSize * 4 * x[0]) + (k * y[0])), 
-							(int)Math.round(screenHeight/2 + (k * y[1]) + (squareSize * 4 * x[1]) + ((j+squareSize) * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + (squareSize * 4 * x[0]) + ((k+squareSize) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((k+squareSize) * y[1]) + (squareSize * 4 * x[1]) + ((j+squareSize) * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + (squareSize * 4 * x[0]) + ((k+squareSize * 2) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((k+squareSize * 2) * y[1]) + (squareSize * 4 * x[1]) + ((j+squareSize) * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + (squareSize * 4 * x[0]) + ((k+squareSize * 2) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((k+squareSize * 2) * y[1]) + (squareSize * 4 * x[1]) + ((j+squareSize * 2) * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + (squareSize * 4 * x[0]) + ((k+squareSize) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((k+squareSize) * y[1]) + (squareSize * 4 * x[1]) + ((j+squareSize * 2) * z)));
-					g.fillPolygon(p1);
-					g.fillPolygon(p2);
-					p1 = new Polygon();
-					p2 = new Polygon();
-					g.setColor(Color.BLACK);
-					p1.addPoint((int)Math.round(screenWidth/2 + (squareSize * 4 * x[0]) + ((k+squareSize) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((k+squareSize) * y[1]) + (squareSize * 4 * x[1]) + (j * z)));
-					p1.addPoint((int)Math.round(screenWidth/2 + (squareSize * 4 * x[0]) + ((k+squareSize * 2) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((k+squareSize * 2) * y[1]) + (squareSize * 4 * x[1]) + (j * z)));
-					p1.addPoint((int)Math.round(screenWidth/2 + (squareSize * 4 * x[0]) + ((k+squareSize * 2) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((k+squareSize * 2) * y[1]) + (squareSize * 4 * x[1]) + ((j+squareSize) * z)));
-					p1.addPoint((int)Math.round(screenWidth/2 + (squareSize * 4 * x[0]) + ((k+squareSize) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((k+squareSize) * y[1]) + (squareSize * 4 * x[1]) + ((j+squareSize) * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + (squareSize * 4 * x[0]) + (k * y[0])), 
-							(int)Math.round(screenHeight/2 + (k * y[1]) + (squareSize * 4 * x[1]) + ((j+squareSize) * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + (squareSize * 4 * x[0]) + ((k+squareSize) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((k+squareSize) * y[1]) + (squareSize * 4 * x[1]) + ((j+squareSize) * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + (squareSize * 4 * x[0]) + ((k+squareSize) * y[0])), 
-							(int)Math.round(screenHeight/2 + ((k+squareSize) * y[1]) + (squareSize * 4 * x[1]) + ((j+squareSize * 2) * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + (squareSize * 4 * x[0]) + (k * y[0])), 
-							(int)Math.round(screenHeight/2 + (k * y[1]) + (squareSize * 4 * x[1]) + ((j+squareSize * 2) * z)));
-					g.fillPolygon(p1);
-					g.fillPolygon(p2);
-				}
-			}
-			
-			for (int k = -squareSize * 4; k < squareSize * 5; k += squareSize * 5) {
-				g.drawLine((int)Math.round(screenWidth/2 + (squareSize * 4 * x[0]) + (k * y[0])), 
-						(int)Math.round(screenHeight/2 + (k * y[1]) + (squareSize * 4 * x[1]) + (squareSize * 4 * z)), 
-						(int)Math.round(screenWidth/2 + (squareSize * 4 * x[0]) + (k * y[0])), 
-						(int)Math.round(screenHeight/2 + (k * y[1]) + (squareSize * 4 * x[1]) - (squareSize * 4 * z))); // Draw back vertical board lines.
-				g.drawLine((int)Math.round(screenWidth/2 + (squareSize * 4 * x[0]) + (squareSize * 4 * y[0])), 
-						(int)Math.round(screenHeight/2 + (squareSize * 4 * y[1]) + (squareSize * 4 * x[1]) + (k * z)), 
-						(int)Math.round(screenWidth/2 + (squareSize * 4 * x[0]) - (squareSize * 4 * y[0])), 
-						(int)Math.round(screenHeight/2 - (squareSize * 4 * y[1]) + (squareSize * 4 * x[1]) + (k * z))); // Draw back horizontal board lines.
-			}
-		}
+		g.drawLine(p[0][0].x, p[0][0].y, p[0][1].x, p[0][1].y);
+		g.drawLine(p[0][0].x, p[0][0].y, p[1][0].x, p[1][0].y);
+		g.drawLine(p[1][1].x, p[1][1].y, p[0][1].x, p[0][1].y);
+		g.drawLine(p[1][1].x, p[1][1].y, p[1][0].x, p[1][0].y);
+	}
+	
+	public void drawBoard(Graphics g) {
+		g.setColor(Color.BLACK);
 		
-		if (viewAngle < Math.PI / 2 || viewAngle > 3 * Math.PI / 2) {
-			for (int k = -squareSize * 4; k < squareSize * 4; k+=squareSize * 2) {
-				for (int j = -squareSize * 4; j < squareSize * 4; j+=squareSize * 2) {
-					Polygon p1 = new Polygon();
-					Polygon p2 = new Polygon();
-					g.setColor(new Color(160,160,120));
-					p1.addPoint((int)Math.round(screenWidth/2 + (k * x[0]) + (squareSize * 4 * y[0])),
-							(int)Math.round(screenHeight/2 + (squareSize * 4 * y[1]) + (k * x[1]) + (j * z)));
-					p1.addPoint((int)Math.round(screenWidth/2 + ((k+squareSize) * x[0]) + (squareSize * 4 * y[0])),
-							(int)Math.round(screenHeight/2 + (squareSize * 4 * y[1]) + ((k+squareSize) * x[1]) + (j * z)));
-					p1.addPoint((int)Math.round(screenWidth/2 + ((k+squareSize) * x[0]) + (squareSize * 4 * y[0])),
-							(int)Math.round(screenHeight/2 + (squareSize * 4 * y[1]) + ((k+squareSize) * x[1]) + ((j+squareSize) * z)));
-					p1.addPoint((int)Math.round(screenWidth/2 + (k * x[0]) + (squareSize * 4 * y[0])),
-							(int)Math.round(screenHeight/2 + (squareSize * 4 * y[1]) + (k * x[1]) + ((j+squareSize) * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + ((k+squareSize) * x[0]) + (squareSize * 4 * y[0])),
-							(int)Math.round(screenHeight/2 + (squareSize * 4 * y[1]) + ((k+squareSize) * x[1]) + ((j+squareSize) * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + ((k+squareSize * 2) * x[0]) + (squareSize * 4 * y[0])),
-							(int)Math.round(screenHeight/2 + (squareSize * 4 * y[1]) + ((k+squareSize * 2) * x[1]) + ((j+squareSize) * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + ((k+squareSize * 2) * x[0]) + (squareSize * 4 * y[0])),
-							(int)Math.round(screenHeight/2 + (squareSize * 4 * y[1]) + ((k+squareSize * 2) * x[1]) + ((j+squareSize * 2) * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + ((k+squareSize) * x[0]) + (squareSize * 4 * y[0])),
-							(int)Math.round(screenHeight/2 + (squareSize * 4 * y[1]) + ((k+squareSize) * x[1]) + ((j+squareSize * 2) * z)));
-					g.fillPolygon(p1);
-					g.fillPolygon(p2);
-					p1 = new Polygon();
-					p2 = new Polygon();
-					g.setColor(Color.BLACK);
-					p1.addPoint((int)Math.round(screenWidth/2 + ((k+squareSize) * x[0]) + (squareSize * 4 * y[0])),
-							(int)Math.round(screenHeight/2 + (squareSize * 4 * y[1]) + ((k+squareSize) * x[1]) + (j * z)));
-					p1.addPoint((int)Math.round(screenWidth/2 + ((k+squareSize * 2) * x[0]) + (squareSize * 4 * y[0])),
-							(int)Math.round(screenHeight/2 + (squareSize * 4 * y[1]) + ((k+squareSize * 2) * x[1]) + (j * z)));
-					p1.addPoint((int)Math.round(screenWidth/2 + ((k+squareSize * 2) * x[0]) + (squareSize * 4 * y[0])),
-							(int)Math.round(screenHeight/2 + (squareSize * 4 * y[1]) + ((k+squareSize * 2) * x[1]) + ((j+squareSize) * z)));
-					p1.addPoint((int)Math.round(screenWidth/2 + ((k+squareSize) * x[0]) + (squareSize * 4 * y[0])),
-							(int)Math.round(screenHeight/2 + (squareSize * 4 * y[1]) + ((k+squareSize) * x[1]) + ((j+squareSize) * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + (k * x[0]) + (squareSize * 4 * y[0])),
-							(int)Math.round(screenHeight/2 + (squareSize * 4 * y[1]) + (k * x[1]) + ((j+squareSize) * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + ((k+squareSize) * x[0]) + (squareSize * 4 * y[0])),
-							(int)Math.round(screenHeight/2 + (squareSize * 4 * y[1]) + ((k+squareSize) * x[1]) + ((j+squareSize) * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + ((k+squareSize) * x[0]) + (squareSize * 4 * y[0])),
-							(int)Math.round(screenHeight/2 + (squareSize * 4 * y[1]) + ((k+squareSize) * x[1]) + ((j+squareSize * 2) * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + (k * x[0]) + (squareSize * 4 * y[0])),
-							(int)Math.round(screenHeight/2 + (squareSize * 4 * y[1]) + (k * x[1]) + ((j+squareSize * 2) * z)));
-					g.fillPolygon(p1);
-					g.fillPolygon(p2);
-				}
-			}
-			
-			for (int k = -squareSize * 4; k < squareSize * 5; k += squareSize * 5) {
-				g.drawLine((int)Math.round(screenWidth/2 + (k * x[0]) + (squareSize * 4 * y[0])), 
-						(int)Math.round(screenHeight/2 + (squareSize * 4 * y[1]) + (k * x[1]) + (squareSize * 4 * z)), 
-						(int)Math.round(screenWidth/2 + (k * x[0]) + (squareSize * 4 * y[0])), 
-						(int)Math.round(screenHeight/2 + (squareSize * 4 * y[1]) + (k * x[1]) - (squareSize * 4 * z))); // Draw other back vertical board lines.
-				g.drawLine((int)Math.round(screenWidth/2 - (squareSize * 4 * x[0]) + (squareSize * 4 * y[0])), 
-						(int)Math.round(screenHeight/2 + (squareSize * 4 * y[1]) - (squareSize * 4 * x[1]) + (k * z)), 
-						(int)Math.round(screenWidth/2 + (squareSize * 4 * x[0]) + (squareSize * 4 * y[0])), 
-						(int)Math.round(screenHeight/2 + (squareSize * 4 * y[1]) + (squareSize * 4 * x[1]) + (k * z))); // Draw other back horizontal board lines.
-			}
-		}
+		if (viewElevation >= 0)
+			drawWall(g,2,false);
 		
-		else {
-			for (int k = -squareSize * 4; k < squareSize * 4; k+=squareSize * 2) {
-				for (int j = -squareSize * 4; j < squareSize * 4; j+=squareSize * 2) {
-					Polygon p1 = new Polygon();
-					Polygon p2 = new Polygon();
-					g.setColor(new Color(160,160,120));
-					p1.addPoint((int)Math.round(screenWidth/2 + (k * x[0]) - (squareSize * 4 * y[0])),
-							(int)Math.round(screenHeight/2 - (squareSize * 4 * y[1]) + (k * x[1]) + (j * z)));
-					p1.addPoint((int)Math.round(screenWidth/2 + ((k+squareSize) * x[0]) - (squareSize * 4 * y[0])),
-							(int)Math.round(screenHeight/2 - (squareSize * 4 * y[1]) + ((k+squareSize) * x[1]) + (j * z)));
-					p1.addPoint((int)Math.round(screenWidth/2 + ((k+squareSize) * x[0]) - (squareSize * 4 * y[0])),
-							(int)Math.round(screenHeight/2 - (squareSize * 4 * y[1]) + ((k+squareSize) * x[1]) + ((j+squareSize) * z)));
-					p1.addPoint((int)Math.round(screenWidth/2 + (k * x[0]) - (squareSize * 4 * y[0])),
-							(int)Math.round(screenHeight/2 - (squareSize * 4 * y[1]) + (k * x[1]) + ((j+squareSize) * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + ((k+squareSize) * x[0]) - (squareSize * 4 * y[0])),
-							(int)Math.round(screenHeight/2 - (squareSize * 4 * y[1]) + ((k+squareSize) * x[1]) + ((j+squareSize) * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + ((k+squareSize * 2) * x[0]) - (squareSize * 4 * y[0])),
-							(int)Math.round(screenHeight/2 - (squareSize * 4 * y[1]) + ((k+squareSize * 2) * x[1]) + ((j+squareSize) * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + ((k+squareSize * 2) * x[0]) - (squareSize * 4 * y[0])),
-							(int)Math.round(screenHeight/2 - (squareSize * 4 * y[1]) + ((k+squareSize * 2) * x[1]) + ((j+squareSize * 2) * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + ((k+squareSize) * x[0]) - (squareSize * 4 * y[0])),
-							(int)Math.round(screenHeight/2 - (squareSize * 4 * y[1]) + ((k+squareSize) * x[1]) + ((j+squareSize * 2) * z)));
-					g.fillPolygon(p1);
-					g.fillPolygon(p2);
-					p1 = new Polygon();
-					p2 = new Polygon();
-					g.setColor(Color.BLACK);
-					p1.addPoint((int)Math.round(screenWidth/2 + ((k+squareSize) * x[0]) - (squareSize * 4 * y[0])),
-							(int)Math.round(screenHeight/2 - (squareSize * 4 * y[1]) + ((k+squareSize) * x[1]) + (j * z)));
-					p1.addPoint((int)Math.round(screenWidth/2 + ((k+squareSize * 2) * x[0]) - (squareSize * 4 * y[0])),
-							(int)Math.round(screenHeight/2 - (squareSize * 4 * y[1]) + ((k+squareSize * 2) * x[1]) + (j * z)));
-					p1.addPoint((int)Math.round(screenWidth/2 + ((k+squareSize * 2) * x[0]) - (squareSize * 4 * y[0])),
-							(int)Math.round(screenHeight/2 - (squareSize * 4 * y[1]) + ((k+squareSize * 2) * x[1]) + ((j+squareSize) * z)));
-					p1.addPoint((int)Math.round(screenWidth/2 + ((k+squareSize) * x[0]) - (squareSize * 4 * y[0])),
-							(int)Math.round(screenHeight/2 - (squareSize * 4 * y[1]) + ((k+squareSize) * x[1]) + ((j+squareSize) * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + (k * x[0]) - (squareSize * 4 * y[0])),
-							(int)Math.round(screenHeight/2 - (squareSize * 4 * y[1]) + (k * x[1]) + ((j+squareSize) * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + ((k+squareSize) * x[0]) - (squareSize * 4 * y[0])),
-							(int)Math.round(screenHeight/2 - (squareSize * 4 * y[1]) + ((k+squareSize) * x[1]) + ((j+squareSize) * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + ((k+squareSize) * x[0]) - (squareSize * 4 * y[0])),
-							(int)Math.round(screenHeight/2 - (squareSize * 4 * y[1]) + ((k+squareSize) * x[1]) + ((j+squareSize * 2) * z)));
-					p2.addPoint((int)Math.round(screenWidth/2 + (k * x[0]) - (squareSize * 4 * y[0])),
-							(int)Math.round(screenHeight/2 - (squareSize * 4 * y[1]) + (k * x[1]) + ((j+squareSize * 2) * z)));
-					g.fillPolygon(p1);
-					g.fillPolygon(p2);
-				}
-			}
-			
-			for (int k = -squareSize * 4; k < squareSize * 5; k += squareSize * 5) {
-				g.drawLine((int)Math.round(screenWidth/2 + (k * x[0]) - (squareSize * 4 * y[0])), 
-						(int)Math.round(screenHeight/2 - (squareSize * 4 * y[1]) + (k * x[1]) + (squareSize * 4 * z)), 
-						(int)Math.round(screenWidth/2 + (k * x[0]) - (squareSize * 4 * y[0])), 
-						(int)Math.round(screenHeight/2 - (squareSize * 4 * y[1]) + (k * x[1]) - (squareSize * 4 * z))); // Draw other back vertical board lines.
-				g.drawLine((int)Math.round(screenWidth/2 - (squareSize * 4 * x[0]) - (squareSize * 4 * y[0])), 
-						(int)Math.round(screenHeight/2 - (squareSize * 4 * y[1]) - (squareSize * 4 * x[1]) + (k * z)), 
-						(int)Math.round(screenWidth/2 + (squareSize * 4 * x[0]) - (squareSize * 4 * y[0])), 
-						(int)Math.round(screenHeight/2 - (squareSize * 4 * y[1]) + (squareSize * 4 * x[1]) + (k * z))); // Draw other right horizontal board lines.
-			}
-		}
+		else
+			drawWall(g,2,true);
+		
+		if (viewAngle < Math.PI)
+			drawWall(g,0,false);
+		
+		else
+			drawWall(g,0,true);
+		
+		if (viewAngle < Math.PI / 2 || viewAngle > 3 * Math.PI / 2)
+			drawWall(g,1,true);
+		
+		else
+			drawWall(g,1,false);
 		
 		game.drawPieces(pieceChoice, g, viewAngle, viewElevation, squareSize, screenWidth, screenHeight);
 	}
