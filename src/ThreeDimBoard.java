@@ -758,7 +758,7 @@ public class ThreeDimBoard {
 		return false;
 	}
 	
-	public void target(Piece highlighted) {
+	public void targetBasedOn(Piece highlighted) {
 		if ((highlighted.p == Player.WHITE && turn == 0) || (highlighted.p == Player.BLACK && turn == 1))
 			for (int k = 0; k < 8; k++)
 				for (int j = 0; j < 8; j++)

@@ -12,8 +12,6 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.KeyEvent;
 
-import java.util.ArrayList;
-
 import javax.swing.Timer;
 import javax.swing.event.MouseInputListener;
 import javax.swing.JFrame;
@@ -27,9 +25,6 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 	private static final long serialVersionUID = 1L;
 	double viewAngle = 0;
 	double viewElevation = 0;
-	int elevate = 0;
-	int turning = 0;
-	int drawError = 0;
 	int inputNeg = 1;
 	int screenWidth;
 	int screenHeight;
@@ -45,9 +40,11 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 	boolean escapeScreen = false;
 	Player winner;
 	PieceType pieceChoice = PieceType.QUEEN;
+	Piece pieceSelected;
+	Piece pieceTargeted;
 	public static boolean hidePawns = false;
 	public static boolean hideBarricades = false;
-	ArrayList<Integer> record;
+	public static boolean rightMouse = false;
 	static Dimension screenSize;
 	
 	Timer tm = new Timer(5, this);
@@ -309,7 +306,6 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 	}
 	
 	public ThreeDimChessRunner() {
-		record = new ArrayList<Integer>();
 		winner = Player.NONE;
 		game = new ThreeDimBoard(0);
 		screenWidth = screenSize.width;
@@ -320,6 +316,8 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 		buttonSize = 200;
 		buttonGap = 100;
 		squareSize = 70;
+		pieceSelected = null;
+		pieceTargeted = null;
 		if(screenHeight < 980 || screenWidth < 1200)
 			squareSize = 60;
 		if(screenHeight < 980 || screenWidth < 1024) {
@@ -328,9 +326,8 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 			buttonGap = 50;
 			titleSize = 150;
 		}
-		if(screenHeight < 860 || screenWidth < 900) {
+		if(screenHeight < 860 || screenWidth < 900)
 			squareSize = 50;
-		}
 		if(screenHeight < 700 || screenWidth < 800) {
 			squareSize = 40;
 			titleSize = 100;
@@ -347,6 +344,7 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 		frame.setUndecorated(true);
 		//frame.setSize(800, 680);
 		frame.addMouseListener(p);
+		frame.addMouseMotionListener(p);
 		frame.addKeyListener(p);
 		frame.setFocusable(true);
 		frame.setFocusTraversalKeysEnabled(false);
@@ -362,51 +360,38 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 		else
 			setBackground(new Color(100,0,0));
 		
-		if (drawError > 0)
-			drawError--;
-		if (record.size() == 6) {
+		if (pieceTargeted != null) {
 			int[] t = new int[3];
 			int[] v = new int[3];
 			for (int k = 0; k < 3; k++) {
-				t[k] = record.get(k);
-				v[k] = record.get(k+3);
+				t[k] = pieceSelected.location[k];
+				v[k] = pieceTargeted.location[k] - pieceSelected.location[k];
 			}
-			if (game.moveValid(t, v) && ((game.turn == 0 && game.square[t[0]][t[1]][t[2]].p == Player.WHITE) || 
-					(game.turn == 1 && game.square[t[0]][t[1]][t[2]].p == Player.BLACK))) {
-				
-				if (!game.intoCheck(game.turn, t, v)) {
-					game.kings[game.turn][0].inCheck = false;
-					game.move(t, v);
-					game.detarget();
-					game.square[t[0]+v[0]][t[1]+v[1]][t[2]+v[2]].highlighted = false;
-					if (game.inCheck(game.turn))
-						game.kings[game.turn][0].inCheck = true;
-					else
-						game.kings[game.turn][0].inCheck = false;
-					if (game.checkmate(game.turn)) {
-						checkmate = true;
-						if (game.turn == 0) winner = Player.BLACK;
-						else winner = Player.WHITE;
-					}
-					else if (game.stalemate(game.turn))
-						draw = true;
-				}
-				else 
-					drawError = 100;
+			game.kings[game.turn][0].inCheck = false;
+			game.move(t, v);
+			if (game.inCheck(game.turn))
+				game.kings[game.turn][0].inCheck = true;
+			if (game.checkmate(game.turn)) {
+				checkmate = true;
+				if (game.turn == 0) winner = Player.BLACK;
+				else winner = Player.WHITE;
 			}
-			else
-				drawError = 100;
-			record = new ArrayList<Integer>();
+			else if (game.stalemate(game.turn))
+				draw = true;
+			pieceSelected = null;
+			pieceTargeted = null;
+			
 		}
-		viewAngle += (double)turning * tm.getDelay()/160;
-		if (viewElevation + (double)elevate * tm.getDelay()/160 > Math.PI/2)
+		
+		if (viewElevation > Math.PI/2)
 			viewElevation = Math.PI/2;
-		else if (viewElevation + (double)elevate * tm.getDelay()/160 < -Math.PI/2)
+		
+		if (viewElevation < -Math.PI/2)
 			viewElevation = -Math.PI/2;
-		else
-			viewElevation += (double)elevate * tm.getDelay()/160;
+		
 		if (viewAngle >= 2 * Math.PI)
 			viewAngle -= 2 * Math.PI;
+		
         if (viewAngle < 0)
         	viewAngle += 2 * Math.PI;
         
@@ -586,6 +571,46 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 		g.drawLine(p[1][1].x, p[1][1].y, p[1][0].x, p[1][0].y);
 	}
 	
+	private Piece closestPiece(int xpos, int ypos, int argument) {
+		Piece returnPiece = null;
+		
+		double[] x = {Math.cos(viewAngle), Math.sin(viewAngle) * Math.sin(viewElevation)};
+		double[] y = {Math.sin(viewAngle), - (Math.cos(viewAngle) * Math.sin(viewElevation))};
+		double z = - Math.cos(viewElevation);
+		
+		int xpref = 0;
+		int ypref = 7;
+		int zpref = 0;
+		
+		if (viewAngle < Math.PI)
+			xpref = 7;
+		if (viewAngle < Math.PI / 2 || viewAngle > 3 * Math.PI / 2)
+			ypref = 0;
+		if (viewElevation > 0)
+			zpref = 7;
+		
+		for (int k = xpref; k != (-xpref*9/7) + 8; k-= xpref*2/7 - 1)
+			for (int j = ypref; j != (-ypref*9/7) + 8; j-= ypref*2/7 - 1)
+				for (int m = zpref; m != (-zpref*9/7) + 8; m-= zpref*2/7 - 1)
+					if ((argument == 0 && ((game.square[m][k][j].pt != PieceType.EMPTY && game.square[m][k][j].pt != PieceType.PAWN && 
+							game.square[m][k][j].pt != PieceType.BARRICADE) || 
+							(game.square[m][k][j].pt == PieceType.PAWN && hidePawns == false) || 
+							(game.square[m][k][j].pt == PieceType.BARRICADE && hideBarricades == false))) || 
+							(argument == 1 && game.square[m][k][j].targeted)) {
+						double xfact = squareSize * (game.square[m][k][j].location[1] - 3.5);
+						double yfact = squareSize * (game.square[m][k][j].location[2] - 3.5);
+						double zfact = squareSize * (game.square[m][k][j].location[0] - 3.5);
+						if (xpos >= (int)Math.round(screenWidth/2 - 25 + (xfact * x[0]) + (yfact * y[0])) && 
+								xpos <= (int)Math.round(screenWidth/2 + 25 + (xfact * x[0]) + (yfact * y[0])) && 
+								ypos >= (int)Math.round(screenHeight/2 - 20 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)) && 
+								ypos <= (int)Math.round(screenHeight/2 + 30 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z))) {
+							returnPiece = game.square[m][k][j];
+							return returnPiece;
+						}
+					}
+		return returnPiece;
+	}
+	
 	public void drawBoard(Graphics g) {
 		g.setColor(Color.BLACK);
 		
@@ -616,30 +641,21 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 		int c = e.getKeyCode();
 		
 		if (!titleScreen && !escapeScreen) {
-			if (c == KeyEvent.VK_LEFT) {
-				turning = 1;
-			}
-			if (c == KeyEvent.VK_RIGHT) {
-				turning = -1;
-			}
-			if (c == KeyEvent.VK_UP) {
-				elevate = 1;
-			}
-			if (c == KeyEvent.VK_DOWN) {
-				elevate = -1;
-			}
+			
 			if (c == KeyEvent.VK_G) {
 				if (hideBarricades == true)
 					hideBarricades = false;
 				else
 					hideBarricades = true;
 			}
+			
 			if (c == KeyEvent.VK_H) {
 				if (hidePawns == true)
 					hidePawns = false;
 				else
 					hidePawns = true;
 			}
+			
 			if (c == KeyEvent.VK_SPACE) {
 				if(pieceChoice == PieceType.QUEEN)
 					pieceChoice = PieceType.PRINCE;
@@ -662,13 +678,7 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		int c = e.getKeyCode();
-		if (c == KeyEvent.VK_LEFT || c == KeyEvent.VK_RIGHT) {
-			turning = 0;
-		}
-		if (c == KeyEvent.VK_UP || c == KeyEvent.VK_DOWN) {
-			elevate = 0;
-		}
+		
 	}
 
 	@Override
@@ -680,191 +690,121 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		
-		xpos = e.getXOnScreen();
-		ypos = e.getYOnScreen();
+		int c = e.getButton();
+		xpos = e.getX();
+		ypos = e.getY();
 		
-		if (!titleScreen && !escapeScreen) {
-			double[] x = {Math.cos(viewAngle), Math.sin(viewAngle) * Math.sin(viewElevation)};
-			double[] y = {Math.sin(viewAngle), - (Math.cos(viewAngle) * Math.sin(viewElevation))};
-			double z = - Math.cos(viewElevation);
-			double[] layer = {Math.sin(viewAngle) * Math.cos(viewElevation), 
-					- (Math.cos(viewAngle) * Math.cos(viewElevation)), Math.sin(viewElevation)};
-			Piece closestClickedPiece = null;
-			double closestPoint = -50000;
+		if (c == MouseEvent.BUTTON1) {
 			
-			if (record.size() != 3 && game.toPromote == null) {
-				for (int k = 0; k < 8; k++) {
-					for (int j = 0; j < 8; j++) {
-						for (int m = 0; m < 8; m++) {
-							if (game.square[k][j][m].pt != PieceType.EMPTY) {
-								double xfact = squareSize * (game.square[k][j][m].location[1] - 3.5);
-								double yfact = squareSize * (game.square[k][j][m].location[2] - 3.5);
-								double zfact = squareSize * (game.square[k][j][m].location[0] - 3.5);
-								if ((game.square[k][j][m].pt != PieceType.EMPTY && game.square[k][j][m].pt != PieceType.PAWN && 
-										game.square[k][j][m].pt != PieceType.BARRICADE) || 
-										(game.square[k][j][m].pt == PieceType.PAWN && hidePawns == false) || 
-										(game.square[k][j][m].pt == PieceType.BARRICADE && hideBarricades == false)) {
-									if (xpos >= (int)Math.round(screenWidth/2 - 25 + (xfact * x[0]) + (yfact * y[0])) && 
-											xpos <= (int)Math.round(screenWidth/2 + 25 + (xfact * x[0]) + (yfact * y[0])) && 
-											ypos >= (int)Math.round(screenHeight/2 - 20 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)) && 
-											ypos <= (int)Math.round(screenHeight/2 + 30 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z))) {
-										if ((closestPoint < (xfact * layer[0]) + (yfact * layer[1]) + (zfact * layer[2]))) {
-											closestPoint = (xfact * layer[0]) + (yfact * layer[1]) + (zfact * layer[2]);
-											closestClickedPiece = game.square[k][j][m];
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-			
-			if (record.size() == 3 && game.toPromote == null) {
-				for (int k = 0; k < 8; k++) {
-					for (int j = 0; j < 8; j++) {
-						for (int m = 0; m < 8; m++) {
-							double xfact = squareSize * (game.square[k][j][m].location[1] - 3.5);
-							double yfact = squareSize * (game.square[k][j][m].location[2] - 3.5);
-							double zfact = squareSize * (game.square[k][j][m].location[0] - 3.5);
-							if (game.square[k][j][m].targeted) {
-								if (xpos >= (int)Math.round(screenWidth/2 - 25 + (xfact * x[0]) + (yfact * y[0])) && 
-										xpos <= (int)Math.round(screenWidth/2 + 25 + (xfact * x[0]) + (yfact * y[0])) && 
-										ypos >= (int)Math.round(screenHeight/2 - 20 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)) && 
-										ypos <= (int)Math.round(screenHeight/2 + 30 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z))) {
-									if ((closestPoint < (xfact * layer[0]) + (yfact * layer[1]) + (zfact * layer[2]))) {
-										closestPoint = (xfact * layer[0]) + (yfact * layer[1]) + (zfact * layer[2]);
-										closestClickedPiece = game.square[k][j][m];
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-			if (closestClickedPiece != null && game.toPromote == null) {
+			if (!titleScreen && !escapeScreen) {
+				double[] x = {Math.cos(viewAngle), Math.sin(viewAngle) * Math.sin(viewElevation)};
+				double[] y = {Math.sin(viewAngle), - (Math.cos(viewAngle) * Math.sin(viewElevation))};
+				double z = - Math.cos(viewElevation);
 				
-				if (record.size() != 3) {
+				if (game.toPromote == null) {
 					
-					for (int k = 0; k < 8; k++)
-						for (int j = 0; j < 8; j++)
-							for (int m = 0; m < 8; m++)
-								game.square[k][j][m].highlighted = false;
-					game.detarget();
-					closestClickedPiece.highlighted = true;
-					game.target(closestClickedPiece);
-					record = new ArrayList<Integer>();
-					record.add(closestClickedPiece.location[0]);
-					record.add(closestClickedPiece.location[1]);
-					record.add(closestClickedPiece.location[2]);
+					if (pieceSelected == null) {
+						pieceSelected = closestPiece(xpos, ypos, 0);
+						
+						if (pieceSelected != null) {
+							pieceSelected.highlighted = true;
+							game.targetBasedOn(pieceSelected);
+						}
+					}
+					else {
+						pieceTargeted = closestPiece(xpos, ypos, 1);
+						if (pieceTargeted == null) {
+							pieceSelected = null;
+						}
+						for (int k = 0; k < 8; k++)
+							for (int j = 0; j < 8; j++)
+								for (int m = 0; m < 8; m++)
+									game.square[k][j][m].highlighted = false;
+						game.detarget();
+					}
+				}
+				else {
+					double xfact = squareSize * (game.toPromote.location[1] - 3.5);
+					double yfact = squareSize * (game.toPromote.location[2] - 3.5);
+					double zfact = squareSize * (game.toPromote.location[0] - 3.5);
+					if (xpos >= (int)Math.round(screenWidth/2 - 25 + (xfact * x[0]) + (yfact * y[0])) && 
+							xpos <= (int)Math.round(screenWidth/2 + 25 + (xfact * x[0]) + (yfact * y[0])) && 
+							ypos >= (int)Math.round(screenHeight/2 - 20 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)) && 
+							ypos <= (int)Math.round(screenHeight/2 + 30 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z))) {
+						game.promote(pieceChoice);
+						pieceChoice = PieceType.QUEEN;
+					}
 				}
 				
-				else if (record.size() == 3 && game.toPromote == null) {
-					for (int k = 0; k < 8; k++)
-						for (int j = 0; j < 8; j++)
-							for (int m = 0; m < 8; m++)
-								game.square[k][j][m].highlighted = false;
-					game.detarget();
-					record.add(closestClickedPiece.location[0] - record.get(0));
-					record.add(closestClickedPiece.location[1] - record.get(1));
-					record.add(closestClickedPiece.location[2] - record.get(2));
-				}
-				
-			}
-			else {
-				for (int k = 0; k < 8; k++)
-					for (int j = 0; j < 8; j++)
-						for (int m = 0; m < 8; m++)
-							game.square[k][j][m].highlighted = false;
-				game.detarget();
-				record = new ArrayList<Integer>();
-			}
-			if (game.toPromote != null) {
-				double xfact = squareSize * (game.toPromote.location[1] - 3.5);
-				double yfact = squareSize * (game.toPromote.location[2] - 3.5);
-				double zfact = squareSize * (game.toPromote.location[0] - 3.5);
-				if (xpos >= (int)Math.round(screenWidth/2 - 25 + (xfact * x[0]) + (yfact * y[0])) && 
-						xpos <= (int)Math.round(screenWidth/2 + 25 + (xfact * x[0]) + (yfact * y[0])) && 
-						ypos >= (int)Math.round(screenHeight/2 - 20 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z)) && 
-						ypos <= (int)Math.round(screenHeight/2 + 30 + (xfact * x[1]) + (yfact * y[1]) + (zfact * z))) {
-					game.promote(pieceChoice);
+				if (xpos >= screenWidth/2 + squareSize * 6 && xpos <= screenWidth/2 + squareSize * 6 + buttonSize && 
+						ypos >= 200 && ypos <= 200 + buttonSize/2 && 
+						(checkmate || draw)) {
+					winner = Player.NONE;
+					game = new ThreeDimBoard(0);
+					inputNeg = 1;
+					checkmate = false;
+					draw = false;
 					pieceChoice = PieceType.QUEEN;
+					hidePawns = false;
+					hideBarricades = false;
+					pieceSelected = null;
+					pieceTargeted = null;
+				}
+				
+				if (xpos >= screenWidth/2 + squareSize * 6 && xpos <= screenWidth/2 + squareSize * 6 + buttonSize && 
+						ypos >= 200 + buttonSize/2 + buttonGap && ypos <= 200 + buttonSize + buttonGap && 
+						!checkmate)
+					draw = true;
+				
+				if (xpos >= screenWidth/2 + squareSize * 6 && xpos <= screenWidth/2 + squareSize * 6 + buttonSize && 
+						ypos >= 200 + buttonSize + buttonGap * 2 && ypos <= 200 + buttonSize * 3/2 + buttonGap * 2 && !draw) {
+					checkmate = true;
+					if (game.turn == 0)
+						winner = Player.BLACK;
+					else
+						winner = Player.WHITE;
 				}
 			}
-			
-			if (xpos >= screenWidth/2 + squareSize * 6 && xpos <= screenWidth/2 + squareSize * 6 + buttonSize && 
-					ypos >= 200 && ypos <= 200 + buttonSize/2 && 
-					(checkmate || draw)) {
-				winner = Player.NONE;
-				game = new ThreeDimBoard(0);
-				elevate = 0;
-				turning = 0;
-				drawError = 0;
-				inputNeg = 1;
-				checkmate = false;
-				draw = false;
-				pieceChoice = PieceType.QUEEN;
-				hidePawns = false;
-				hideBarricades = false;
-				record = new ArrayList<Integer>();
+			else if (titleScreen == true) {
+				
+				if (xpos >= screenWidth/2 - buttonSize * 3/2 - buttonGap && xpos <= screenWidth/2 - buttonSize/2 - buttonGap && 
+						ypos >= screenHeight/2 - buttonSize * 3/4 && ypos <= screenHeight/2 - buttonSize/4) {
+					titleScreen = false;
+					winner = Player.NONE;
+					game = new ThreeDimBoard(0);
+					viewAngle = 0;
+					viewElevation = 0;
+					inputNeg = 1;
+					checkmate = false;
+					draw = false;
+					pieceChoice = PieceType.QUEEN;
+					hidePawns = false;
+					hideBarricades = false;
+					pieceSelected = null;
+					pieceTargeted = null;
+				}
+				
+				if (xpos >= screenWidth/2 - buttonSize/2 && xpos <= screenWidth/2 + buttonSize/2 && 
+						ypos >= screenHeight/2 - buttonSize/4 + buttonGap && ypos <= screenHeight/2 + buttonSize/4 + buttonGap)
+					System.exit(0);
+				
 			}
-			
-			if (xpos >= screenWidth/2 + squareSize * 6 && xpos <= screenWidth/2 + squareSize * 6 + buttonSize && 
-					ypos >= 200 + buttonSize/2 + buttonGap && ypos <= 200 + buttonSize + buttonGap && 
-					!checkmate)
-				draw = true;
-			
-			if (xpos >= screenWidth/2 + squareSize * 6 && xpos <= screenWidth/2 + squareSize * 6 + buttonSize && 
-					ypos >= 200 + buttonSize + buttonGap * 2 && ypos <= 200 + buttonSize * 3/2 + buttonGap * 2 && !draw) {
-				checkmate = true;
-				if (game.turn == 0)
-					winner = Player.BLACK;
-				else
-					winner = Player.WHITE;
+			else if (escapeScreen == true) {
+				
+				if (xpos >= screenWidth/2 - buttonSize/2 && xpos <= screenWidth/2 + buttonSize/2 && 
+						ypos >= 200 && ypos <= 200 + buttonSize/2)
+					escapeScreen = false;
+				
+				if (xpos >= screenWidth/2 - buttonSize/2 && xpos <= screenWidth/2 + buttonSize/2 && 
+						ypos >= 200 + buttonSize/2 + buttonGap && ypos <= 200 + buttonSize + buttonGap) {
+					titleScreen = true;
+					escapeScreen = false;
+				}
+				
+				if (xpos >= screenWidth/2 - buttonSize/2 && xpos <= screenWidth/2 + buttonSize/2 && 
+						ypos >= 200 + buttonSize + buttonGap * 2 && ypos <= 200 + buttonSize * 3/2 + buttonGap * 2)
+					System.exit(0);
 			}
-		}
-		else if (titleScreen == true) {
-			
-			if (xpos >= screenWidth/2 - buttonSize * 3/2 - buttonGap && xpos <= screenWidth/2 - buttonSize/2 - buttonGap && 
-					ypos >= screenHeight/2 - buttonSize * 3/4 && ypos <= screenHeight/2 - buttonSize/4) {
-				titleScreen = false;
-				winner = Player.NONE;
-				game = new ThreeDimBoard(0);
-				viewAngle = 0;
-				viewElevation = 0;
-				elevate = 0;
-				turning = 0;
-				drawError = 0;
-				inputNeg = 1;
-				checkmate = false;
-				draw = false;
-				pieceChoice = PieceType.QUEEN;
-				hidePawns = false;
-				hideBarricades = false;
-				record = new ArrayList<Integer>();
-			}
-			
-			if (xpos >= screenWidth/2 - buttonSize/2 && xpos <= screenWidth/2 + buttonSize/2 && 
-					ypos >= screenHeight/2 - buttonSize/4 + buttonGap && ypos <= screenHeight/2 + buttonSize/4 + buttonGap)
-				System.exit(0);
-			
-		}
-		else if (escapeScreen == true) {
-			
-			if (xpos >= screenWidth/2 - buttonSize/2 && xpos <= screenWidth/2 + buttonSize/2 && 
-					ypos >= 200 && ypos <= 200 + buttonSize/2)
-				escapeScreen = false;
-			
-			if (xpos >= screenWidth/2 - buttonSize/2 && xpos <= screenWidth/2 + buttonSize/2 && 
-					ypos >= 200 + buttonSize/2 + buttonGap && ypos <= 200 + buttonSize + buttonGap) {
-				titleScreen = true;
-				escapeScreen = false;
-			}
-			
-			if (xpos >= screenWidth/2 - buttonSize/2 && xpos <= screenWidth/2 + buttonSize/2 && 
-					ypos >= 200 + buttonSize + buttonGap * 2 && ypos <= 200 + buttonSize * 3/2 + buttonGap * 2)
-				System.exit(0);
-			
 		}
 	}
 
@@ -882,25 +822,39 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
 		
+		xpos = e.getX();
+		ypos = e.getY();
+		int c = e.getButton();
+		
+		if (c == MouseEvent.BUTTON3)
+			rightMouse = true;
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
 		
+		xpos = e.getX();
+		ypos = e.getY();
+		int c = e.getButton();
+		
+		if (c == MouseEvent.BUTTON3)
+			rightMouse = false;
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		// TODO Auto-generated method stub
 		
+		if(rightMouse) {
+			viewAngle += ((double)(xpos - e.getX()))/500;
+			viewElevation -= ((double)(ypos - e.getY()))/500;
+		}
+		xpos = e.getX();
+		ypos = e.getY();
 	}
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		// TODO Auto-generated method stub
 		
 	}
 }
