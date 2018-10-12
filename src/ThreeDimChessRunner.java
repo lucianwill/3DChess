@@ -318,17 +318,17 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 		squareSize = 70;
 		pieceSelected = null;
 		pieceTargeted = null;
-		if(screenHeight < 980 || screenWidth < 1200)
+		if (screenHeight < 980 || screenWidth < 1200)
 			squareSize = 60;
-		if(screenHeight < 980 || screenWidth < 1024) {
+		if (screenHeight < 980 || screenWidth < 1024) {
 			squareSize = 60;
 			buttonSize = 100;
 			buttonGap = 50;
 			titleSize = 150;
 		}
-		if(screenHeight < 860 || screenWidth < 900)
+		if (screenHeight < 860 || screenWidth < 900)
 			squareSize = 50;
-		if(screenHeight < 700 || screenWidth < 800) {
+		if (screenHeight < 700 || screenWidth < 800) {
 			squareSize = 40;
 			titleSize = 100;
 			buttonGap = 30;
@@ -355,7 +355,7 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 	
 	public void actionPerformed(ActionEvent e) {
 		
-		if(escapeScreen)
+		if (escapeScreen)
 			setBackground(new Color(80,80,40));
 		else
 			setBackground(new Color(100,0,0));
@@ -455,7 +455,7 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 			g.setColor(new Color(160,160,120));
 			if (var == 0)
 				xValue = new int[] {4};
-			else if(var == 1)
+			else if (var == 1)
 				yValue = new int[] {4};
 			else
 				zValue = new int[] {4};
@@ -657,15 +657,15 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 			}
 			
 			if (c == KeyEvent.VK_SPACE) {
-				if(pieceChoice == PieceType.QUEEN)
+				if (pieceChoice == PieceType.QUEEN)
 					pieceChoice = PieceType.PRINCE;
-				else if(pieceChoice == PieceType.PRINCE)
+				else if (pieceChoice == PieceType.PRINCE)
 					pieceChoice = PieceType.ROOK;
-				else if(pieceChoice == PieceType.ROOK)
+				else if (pieceChoice == PieceType.ROOK)
 					pieceChoice = PieceType.BISHOP;
-				else if(pieceChoice == PieceType.BISHOP)
+				else if (pieceChoice == PieceType.BISHOP)
 					pieceChoice = PieceType.KNIGHT;
-				else if(pieceChoice == PieceType.KNIGHT)
+				else if (pieceChoice == PieceType.KNIGHT)
 					pieceChoice = PieceType.QUEEN;
 			}
 		}
@@ -810,13 +810,11 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -845,7 +843,7 @@ public class ThreeDimChessRunner extends JPanel implements KeyListener, ActionLi
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		
-		if(rightMouse) {
+		if (rightMouse) {
 			viewAngle += ((double)(xpos - e.getX()))/500;
 			viewElevation -= ((double)(ypos - e.getY()))/500;
 		}

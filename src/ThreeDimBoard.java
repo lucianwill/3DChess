@@ -375,7 +375,7 @@ public class ThreeDimBoard {
 				if (square[t[0]][t[1]][t[2]].pt == PieceType.KING) {
 					
 					int s;
-					if(square[t[0]][t[1]][t[2]].p == Player.WHITE)
+					if (square[t[0]][t[1]][t[2]].p == Player.WHITE)
 						s = 0;
 					else
 						s = 1;
